@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: inline;
+}
+
+.jumbotron {
+    text-align: center;
+    font-size: 20px;
+    color: white;
+    background-color: #A6B1E1;
+    padding: 50px;
+}
+
+nav {
+    background-color: #3F72AF;
+    padding: 5px;
+    position: sticky;
+    top: 0;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    padding-inline: 4rem;
+    gap: 2rem;
+}
+
+nav ul li a {
+    text-decoration: none;
+    font-family: Verdana, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #F5F5F5;
+}
+
+nav ul li a:hover {
+    color: #95E1D5;   
+}
+
+main {
+    padding: 40px;
+    display: flex;
+    gap: 2rem;
+    background-color: #F0F0F0;
+}
+
+#content {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem 2rem;
+}
+
+#content h3 {
+    font-size: 18px;
+    font-style: italic;
+}
+
+.quotes {
+    color: #213555;
+    font-style: italic;
+}
+
+.card {
+    padding: 20px;
+    box-shadow: 0 3px 9px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    background-color: #F6F6F6;
+}
+
+.isi-hobi {
+    padding-left: 19px;
+}
+
+h2 {
+    color: #3F72AF;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.gambar-hobi {
+    width: 100%;
+    max-height: 255px;
+    object-fit: scale-down;
+    object-position: center;
+}
+
+aside {
+    flex: 1;
+}
+
+.profile header {
+    text-align: center;
+}
+
+.profile img {
+    width: 250px;
+    border-radius: 360px;
+}
+
+.profile h3 {
+    color: #3F72AF;
+}
+
+footer {
+    color: #F5F5F5;
+    background-color: #3F72AF;
+    padding: 10px;
+    text-align: center;
+}
+
+@media screen and (max-width: 1200px) {
+    main {
+        flex-flow: column nowrap;
+    }
+
+    aside {
+        align-self: center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .jumbotron {
+        justify-content: center;
+    }
+
+    nav ul {
+        justify-content: center;
+    }
+
+    aside {
+        align-self: stretch;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profile img {
+        width: 170px;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        column-gap: 0.5rem;
+        justify-content: center;
+    }
+}
