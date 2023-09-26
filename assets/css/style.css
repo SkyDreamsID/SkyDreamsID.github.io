@@ -140,6 +140,10 @@ footer {
         justify-content: center;
     }
 
+    .card {
+        border-radius: 20px;
+    }
+
     aside {
         align-self: stretch;
     }
@@ -154,5 +158,9 @@ footer {
         flex-wrap: wrap;
         column-gap: 0.5rem;
         justify-content: center;
+    }
+
+    .card {
+        border-radius: 20px;
     }
 }
