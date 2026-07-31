@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${sans.variable} ${heading.variable} ${jetbrainsMono.variable} ${vt323.variable} antialiased`}
+        className={`${sans.variable} ${heading.variable} ${jetbrainsMono.variable} ${vt323.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
