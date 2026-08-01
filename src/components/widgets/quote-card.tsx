@@ -30,11 +30,11 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
   if (isLoading) {
     return (
       <motion.div
-        className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-4"
+        className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-5"
       >
-        <div className="flex h-10 w-10 animate-pulse items-center justify-center rounded-full bg-muted/50 mb-3"></div>
-        <div className="h-5 w-3/4 animate-pulse rounded bg-muted/50 mb-2"></div>
-        <div className="h-3 w-1/2 animate-pulse rounded bg-muted/50"></div>
+        <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-muted/50 mb-4"></div>
+        <div className="h-6 w-3/4 animate-pulse rounded bg-muted/50 mb-2"></div>
+        <div className="h-4 w-1/2 animate-pulse rounded bg-muted/50"></div>
       </motion.div>
     );
   }
@@ -70,7 +70,7 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
       rel="noreferrer"
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-[#5865F2]/10 p-4 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 transition-colors"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-[#5865F2]/10 p-5 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 transition-colors"
     >
       {/* Decorative Discord-like Background element */}
       <span className="pointer-events-none absolute -right-6 -top-6 select-none font-heading text-[160px] font-bold leading-none text-[#5865F2] opacity-5 transition-opacity group-hover:opacity-10">
@@ -78,9 +78,9 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
       </span>
 
       <div className="relative z-10 flex flex-col h-full min-h-0">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div className="relative h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full bg-[#5865F2] text-white">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="relative h-11 w-11 flex-shrink-0 flex items-center justify-center rounded-full bg-[#5865F2] text-white">
               {user?.avatar ? (
                 <img 
                   src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`} 
@@ -88,34 +88,34 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
                   className="h-full w-full rounded-full object-cover border border-[#5865F2]/50"
                 />
               ) : (
-                <span className="font-bold text-xs">?</span>
+                <span className="font-bold text-sm">?</span>
               )}
-              <div className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-background ${statusColors[status]}`}></div>
+              <div className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[2.5px] border-background ${statusColors[status]}`}></div>
             </div>
             <div>
-              <h3 className="font-bold text-foreground leading-none text-[13px]">
+              <h3 className="font-bold text-foreground leading-none text-[15px]">
                 {user?.display_name || user?.username || "Discord"}
               </h3>
-              <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1.5">
+              <p className="text-[12px] text-muted-foreground mt-1 flex items-center gap-1.5">
                 {statusText[status]}
               </p>
             </div>
           </div>
           
           <div className="flex flex-col items-end text-right">
-            <span className="text-[7px] uppercase tracking-wider text-muted-foreground font-semibold">Member Since</span>
-            <span className="text-[10px] font-mono text-zinc-300">{memberSince}</span>
+            <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Member Since</span>
+            <span className="text-[11px] font-mono text-zinc-300">{memberSince}</span>
           </div>
         </div>
 
         {activity ? (
-          <div className="flex flex-col gap-1 rounded-lg bg-zinc-900/60 p-2 border border-white/5 overflow-hidden">
-            <p className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">
+          <div className="flex flex-col gap-1.5 rounded-xl bg-zinc-900/60 p-3 border border-white/5 overflow-hidden">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
               {activity.type === 2 ? "Listening to" : activity.type === 1 ? "Streaming" : "Playing"}
             </p>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-3">
               {activity.assets?.large_image && (
-                <div className="relative h-10 w-10 shrink-0 rounded-md overflow-hidden bg-zinc-800">
+                <div className="relative h-12 w-12 shrink-0 rounded-lg overflow-hidden bg-zinc-800">
                   <img 
                     src={activity.assets.large_image.startsWith('spotify:') 
                       ? `https://i.scdn.co/image/${activity.assets.large_image.split(':')[1]}`
@@ -124,7 +124,7 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
                     className="h-full w-full object-cover"
                   />
                   {activity.assets?.small_image && (
-                    <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-zinc-900 overflow-hidden bg-zinc-800">
+                    <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-zinc-900 overflow-hidden bg-zinc-800">
                       <img 
                         src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png?size=64`}
                         alt="Small Icon"
@@ -135,29 +135,29 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
                 </div>
               )}
               <div className="flex flex-col min-w-0 flex-1 justify-center">
-                <span className="font-bold text-[11px] leading-[14px] text-zinc-100 truncate">{activity.name}</span>
-                {activity.details && <span className="text-[10px] leading-[13px] text-zinc-400 truncate mt-0.5">{activity.details}</span>}
-                {activity.state && <span className="text-[10px] leading-[13px] text-zinc-400 truncate">{activity.state}</span>}
+                <span className="font-bold text-[13px] leading-[16px] text-zinc-100 truncate">{activity.name}</span>
+                {activity.details && <span className="text-[11px] leading-[15px] text-zinc-400 truncate mt-0.5">{activity.details}</span>}
+                {activity.state && <span className="text-[11px] leading-[15px] text-zinc-400 truncate">{activity.state}</span>}
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex-1 mt-1">
-            <h3 className="font-heading text-[15px] font-medium text-foreground">
+          <div className="flex-1 mt-2">
+            <h3 className="font-heading text-[16px] font-medium text-foreground">
               Let's Chat!
             </h3>
-            <p className="mt-0.5 text-xs text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Terhubung dengan saya di Discord
             </p>
           </div>
         )}
       </div>
 
-      <div className="relative z-10 mt-auto pt-2.5 flex items-center justify-between border-t border-[#5865F2]/20">
-        <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#5865F2]">
+      <div className="relative z-10 mt-auto pt-4 flex items-center justify-between border-t border-[#5865F2]/20">
+        <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5865F2]">
           Kirim Pesan
         </p>
-        <span className="text-[#5865F2] text-xs transition-transform group-hover:translate-x-1">
+        <span className="text-[#5865F2] text-sm transition-transform group-hover:translate-x-1">
           →
         </span>
       </div>
