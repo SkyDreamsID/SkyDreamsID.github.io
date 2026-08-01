@@ -7,44 +7,6 @@ import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-i
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-function TypewriterText({ 
-  text, 
-  delay = 0, 
-  start = true, 
-  onComplete, 
-  className 
-}: { 
-  text: string; 
-  delay?: number; 
-  start?: boolean; 
-  onComplete?: () => void; 
-  className?: string; 
-}) {
-  const [displayedText, setDisplayedText] = useState("");
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    if (!start) return;
-    const timeout = setTimeout(() => setStarted(true), delay);
-    return () => clearTimeout(timeout);
-  }, [delay, start]);
-
-  useEffect(() => {
-    if (!started) return;
-    let i = 0;
-    const interval = setInterval(() => {
-      setDisplayedText(text.slice(0, i + 1));
-      i++;
-      if (i >= text.length) {
-        clearInterval(interval);
-        if (onComplete) onComplete();
-      }
-    }, 45);
-    return () => clearInterval(interval);
-  }, [text, started, onComplete]);
-
-  return <span className={className}>{displayedText}</span>;
-}
 
 function RotatingText({ items, className }: { items: string[]; className?: string }) {
   const [index, setIndex] = useState(0);
@@ -195,9 +157,7 @@ export function Hero() {
   const { data: lastfmData, isLoading: isLastfmLoading, error: lastfmError } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: profileData, isLoading: isProfileLoading } = useSWR<any>("/profile", fetchSkyDreamsAPI, { refreshInterval: 60000 });
 
-  // Hero Section sequential typewriter state
-  const [greetingDone, setGreetingDone] = useState(false);
-  const [nameDone, setNameDone] = useState(false);
+
 
   // Pip-Boy Card 5-Phase Animation State
   const [pipboyPhase, setPipboyPhase] = useState(1);
@@ -254,34 +214,30 @@ export function Hero() {
         
         {/* Left Column (7) */}
         <div className="flex flex-col justify-start lg:col-span-7 lg:pt-2">
-          <h1 className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl">
-            <TypewriterText 
-              text="Halo, saya " 
-              delay={100} 
-              onComplete={() => setGreetingDone(true)} 
-            />
-            <br className="hidden sm:block" />
-            <span className="text-emerald-500">
-              <TypewriterText 
-                text={heroName} 
-                start={greetingDone} 
-                delay={100} 
-                onComplete={() => setNameDone(true)} 
-              />
-            </span>
-          </h1>
+          <motion.h1 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
+          >
+            Halo, saya <br className="hidden sm:block" />
+            <span className="text-emerald-500">{heroName}</span>
+          </motion.h1>
           
-          <div className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]">
-            {nameDone && (
-              <RotatingText 
-                items={(profileData?.profile?.hero_tagline || "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast")
-                  .split("|")
-                  .map((t: string) => t.trim())
-                  .filter(Boolean)
-                  .map((t: string) => (t.startsWith(">") ? t : `> ${t}`))} 
-              />
-            )}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]"
+          >
+            <RotatingText 
+              items={(profileData?.profile?.hero_tagline || "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast")
+                .split("|")
+                .map((t: string) => t.trim())
+                .filter(Boolean)
+                .map((t: string) => (t.startsWith(">") ? t : `> ${t}`))} 
+            />
+          </motion.div>
 
           {/* Buttons */}
           <motion.div 
