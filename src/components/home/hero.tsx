@@ -71,23 +71,7 @@ function RotatingText({ items, className }: { items: string[], className?: strin
   );
 }
 
-function GlitchText({ className }: { className?: string }) {
-  const [text, setText] = useState("ERR: NO_SIGNAL");
-  const chars = "!<>-_\\\\/[]{}—=+*^?#01";
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      let result = "ERR: ";
-      for (let i = 0; i < 12; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      setText(result);
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
 
-  return <span className={`font-mono text-red-500 opacity-80 ${className}`}>{text}</span>;
-}
 
 function MarqueeText({ text, className }: { text: string; className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -203,17 +187,10 @@ export function Hero() {
   const [pipboyBootPhase, setPipboyBootPhase] = useState(0);
   
   useEffect(() => {
-     if (sessionStorage.getItem("pipboyBooted")) {
-       setPipboyBootPhase(3);
-       return;
-     }
-
-     const t1 = setTimeout(() => setPipboyBootPhase(1), 500); 
-     const t2 = setTimeout(() => setPipboyBootPhase(2), 2500); 
-     const t3 = setTimeout(() => {
-       setPipboyBootPhase(3);
-       sessionStorage.setItem("pipboyBooted", "true");
-     }, 4000); 
+     // Run smooth boot sequence on mount
+     const t1 = setTimeout(() => setPipboyBootPhase(1), 300); 
+     const t2 = setTimeout(() => setPipboyBootPhase(2), 1800); 
+     const t3 = setTimeout(() => setPipboyBootPhase(3), 3000); 
 
      return () => {
        clearTimeout(t1);
@@ -225,7 +202,6 @@ export function Hero() {
   const handleSkipPipboy = () => {
      if (pipboyBootPhase < 3) {
        setPipboyBootPhase(3);
-       sessionStorage.setItem("pipboyBooted", "true");
      }
   };
 
@@ -269,13 +245,9 @@ export function Hero() {
           </h1>
           
           <div className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]">
-            {isProfileLoading || !profileData?.profile?.hero_tagline ? (
-              <GlitchText />
-            ) : (
-              <RotatingText 
-                items={profileData.profile.hero_tagline.split("|").map((t: string) => t.trim()).filter(Boolean)} 
-              />
-            )}
+            <RotatingText 
+              items={(profileData?.profile?.hero_tagline || "Tech Enthusiast | Automation Lover").split("|").map((t: string) => t.trim()).filter(Boolean)} 
+            />
           </div>
 
           {/* Buttons */}
