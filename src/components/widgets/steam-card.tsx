@@ -11,8 +11,8 @@ export function SteamCard({ data, isLoading }: { data: any; isLoading: boolean }
   
   // Karena keterbatasan API Steam publik tanpa key, kita belum bisa fetch frame otomatis.
   // Lu bisa masukin URL avatar frame lu di sini!
-  // Contoh frame URL (dari Points Shop): "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/..."
-  const avatarFrameUrl = "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/2126840/c85aebdb1664bf87037198755b41cf43ffb9c4c7.png"; // Placeholder cute frame
+  // Cara dapet URL frame lu: Buka profil Steam lu di browser -> Klik kanan di frame avatar lu -> Inspect -> Copy link gambarnya yang berakhiran .png
+  const avatarFrameUrl = ""; // Kosongin dulu biar gak error broken image
 
   return (
     <Link href={profileUrl} target="_blank" className="group block h-full no-underline">
@@ -89,11 +89,13 @@ export function SteamCard({ data, isLoading }: { data: any; isLoading: boolean }
                 />
               )}
               {/* Avatar Frame (Slightly larger than avatar) */}
-              <img 
-                src={avatarFrameUrl}
-                alt="Avatar Frame"
-                className="absolute -inset-[20%] h-[140%] w-[140%] max-w-none object-cover z-10 drop-shadow-md pointer-events-none"
-              />
+              {avatarFrameUrl && (
+                <img 
+                  src={avatarFrameUrl}
+                  alt="Avatar Frame"
+                  className="absolute -inset-[20%] h-[140%] w-[140%] max-w-none object-cover z-10 drop-shadow-md pointer-events-none"
+                />
+              )}
             </div>
             
             <p className="truncate font-sans text-[14px] font-bold text-zinc-100 z-10">
