@@ -22,18 +22,18 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
     if (isDeleting) {
       timeout = setTimeout(() => {
         setDisplayedText(currentText.slice(0, displayedText.length - 1));
-        if (displayedText.length <= 1) {
+        if (displayedText.length <= 1) { // keep the "> " prefix if it exists
           setIsDeleting(false);
           setIndex((prev) => (prev + 1) % items.length);
         }
-      }, 30);
+      }, 10);
     } else {
       timeout = setTimeout(() => {
         setDisplayedText(currentText.slice(0, displayedText.length + 1));
         if (displayedText.length === currentText.length) {
           timeout = setTimeout(() => setIsDeleting(true), 2000);
         }
-      }, 50);
+      }, 20);
     }
     
     return () => clearTimeout(timeout);
@@ -44,7 +44,13 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
   return (
     <span className={className}>
       {displayedText}
-      <span className="animate-pulse opacity-70">|</span>
+      <motion.span 
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ repeat: Infinity, duration: 0.8, ease: "circInOut" }}
+        className="inline-block text-emerald-500 font-bold"
+      >
+        |
+      </motion.span>
     </span>
   );
 }
