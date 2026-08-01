@@ -30,10 +30,10 @@ export function BentoGrid() {
         </div>
 
         {/* Mosaic Grid - Blueprint Match */}
-        <div className="grid auto-rows-[240px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid auto-rows-auto sm:auto-rows-[240px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           
           {/* Jurnal Visual (Span 2 vertikal) */}
-          <div className="lg:row-span-2">
+          <div className="lg:row-span-2 min-h-[240px]">
             <VisualJournalCard data={homeData?.latestGalleryPost ? {
               latestPostTitle: homeData.latestGalleryPost.title,
               thumbnailUrl: homeData.latestGalleryPost.thumbnail,
@@ -44,17 +44,17 @@ export function BentoGrid() {
           </div>
 
           {/* Now/Last Play */}
-          <div>
+          <div className="min-h-[240px]">
             <MusicCard data={currentTrack} isLoading={isLastfmLoading} />
           </div>
 
           {/* Quote */}
-          <div>
+          <div className="min-h-[240px]">
             <QuoteCard data={homeData?.quote} isLoading={isHomeLoading} />
           </div>
 
           {/* Steam */}
-          <div>
+          <div className="min-h-[240px]">
             <SteamCard data={steamData ? {
               personaName: steamData.personaName,
               status: steamData.personaState || (steamData.inGame ? "In-Game" : "Offline"),
@@ -67,12 +67,12 @@ export function BentoGrid() {
           </div>
 
           {/* Catatanku (WIP) */}
-          <div>
+          <div className="min-h-[240px]">
             <KnowledgeBaseCard />
           </div>
 
           {/* Last.fm Statistik (Full width bottom) */}
-          <div className="sm:col-span-2 lg:col-span-3 h-auto sm:h-full">
+          <div className="sm:col-span-2 lg:col-span-3 min-h-[240px]">
             <LastfmCard data={lastfmData} isLoading={isLastfmLoading} />
           </div>
 

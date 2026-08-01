@@ -37,7 +37,7 @@ export function LastfmCard({ data, isLoading }: LastfmCardProps) {
   );
 
   return (
-    <div className="flex h-full w-full flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+    <div className="flex min-h-[240px] w-full flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
       {/* Header Utama */}
       <div className="mb-4 md:mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-emerald-500">
