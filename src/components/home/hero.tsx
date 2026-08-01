@@ -7,35 +7,67 @@ import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-i
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function RotatingText({ items, className }: { items: string[], className?: string }) {
-  const [index, setIndex] = useState(0);
+function TypewriterText({ text, delay = 0, className }: { text: string, delay?: number, className?: string }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    if (items.length <= 1) return;
+    const timeout = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(timeout);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    let i = 0;
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % items.length);
-    }, 3000);
+      setDisplayedText(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 50);
     return () => clearInterval(interval);
-  }, [items]);
+  }, [text, started]);
+
+  return <span className={className}>{displayedText}</span>;
+}
+
+function RotatingText({ items, className }: { items: string[], className?: string }) {
+  const [index, setIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (items.length === 0) return;
+    const currentText = items[index];
+    
+    let timeout: NodeJS.Timeout;
+    
+    if (isDeleting) {
+      timeout = setTimeout(() => {
+        setDisplayedText(currentText.slice(0, displayedText.length - 1));
+        if (displayedText.length <= 1) {
+          setIsDeleting(false);
+          setIndex((prev) => (prev + 1) % items.length);
+        }
+      }, 30);
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayedText(currentText.slice(0, displayedText.length + 1));
+        if (displayedText.length === currentText.length) {
+          timeout = setTimeout(() => setIsDeleting(true), 2000);
+        }
+      }, 50);
+    }
+    
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting, index, items]);
 
   if (items.length === 0) return null;
-  if (items.length === 1) return <span className={className}>{items[0]}</span>;
 
   return (
-    <div className={`relative inline-block overflow-hidden h-[1.2em] w-full align-bottom ${className || ""}`}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={index}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="absolute w-full whitespace-nowrap text-left"
-        >
-          {items[index]}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+    <span className={className}>
+      {displayedText}
+      <span className="animate-pulse opacity-70">|</span>
+    </span>
   );
 }
 
@@ -130,28 +162,21 @@ export function Hero() {
         
         {/* Left Column (7) */}
         <div className="flex flex-col justify-start lg:col-span-7 lg:pt-2">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
-          >
-            Halo, saya <br className="hidden sm:block" />
-            <span className="text-emerald-500">{isProfileLoading ? "..." : (profileData?.profile?.hero_name || "Rifki Eka Putra")}</span>
-          </motion.h1>
+          <h1 className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl">
+            <TypewriterText text="Halo, saya " delay={100} />
+            <br className="hidden sm:block" />
+            <span className="text-emerald-500">
+              <TypewriterText text={isProfileLoading ? "..." : (profileData?.profile?.hero_name || "Rifki Eka Putra")} delay={800} />
+            </span>
+          </h1>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]"
-          >
+          <div className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]">
             {isProfileLoading ? "..." : (
               <RotatingText 
                 items={(profileData?.profile?.hero_tagline || "Mahasiswa D4 Teknologi Rekayasa Elektronika @ Politeknik Negeri Madiun").split("|").map((t: string) => t.trim())} 
               />
             )}
-          </motion.div>
+          </div>
 
           {/* Buttons */}
           <motion.div 
