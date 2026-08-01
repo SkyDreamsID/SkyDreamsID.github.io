@@ -31,11 +31,14 @@ const vt323 = VT323({
 });
 
 export const metadata: Metadata = {
-  title: "Rifki Eka Putra — Personal Hub",
+  title: {
+    default: "Rifki Eka Putra | Personal Hub",
+    template: "%s | Rifki Eka Putra",
+  },
   description:
     "Software engineer & builder. Exploring code, photography, and music from Semarang, Indonesia.",
   openGraph: {
-    title: "Rifki Eka Putra — Personal Hub",
+    title: "Rifki Eka Putra | Personal Hub",
     description: "Software engineer & builder. Digital home of Rifki Eka Putra.",
     type: "website",
   },
