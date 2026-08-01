@@ -198,18 +198,18 @@ body::before {
   }
 
   @keyframes crt-text-float {
-    0%, 100% { transform: translate3d(0, 0, 0); text-shadow: 0 0 5px rgba(0, 255, 102, 0.7); }
-    25% { transform: translate3d(0.4px, -0.3px, 0); text-shadow: 0 0 7px rgba(0, 255, 102, 0.85); }
-    50% { transform: translate3d(-0.3px, 0.4px, 0); text-shadow: 0 0 4px rgba(0, 255, 102, 0.55); }
-    75% { transform: translate3d(0.2px, 0.2px, 0); text-shadow: 0 0 6px rgba(0, 255, 102, 0.9); }
+    0%, 100% { transform: translate3d(0, 0, 0) skewX(0deg); text-shadow: 0 0 5px rgba(0, 255, 102, 0.7); }
+    25% { transform: translate3d(1px, -0.5px, 0) skewX(-1.5deg); text-shadow: -1px 0 8px rgba(0, 255, 102, 0.95); }
+    50% { transform: translate3d(-1px, 0.5px, 0) skewX(1.5deg); text-shadow: 1px 0 4px rgba(0, 255, 102, 0.5); }
+    75% { transform: translate3d(0.5px, 0.5px, 0) skewX(-0.5deg); text-shadow: 0 1px 7px rgba(0, 255, 102, 1); }
   }
   
   @keyframes crt-text-pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
+    50% { opacity: 0.75; }
   }
 
   .animate-crt-text {
-    animation: crt-text-float 7s ease-in-out infinite, crt-text-pulse 4s ease-in-out infinite;
+    animation: crt-text-float 3s ease-in-out infinite, crt-text-pulse 2s ease-in-out infinite;
   }
 }
