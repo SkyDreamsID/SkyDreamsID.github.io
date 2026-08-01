@@ -2,9 +2,19 @@
 
 import { motion } from "framer-motion";
 import useSWR from "swr";
-import Image from "next/image";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+// Helper to get Discord account creation date from Snowflake ID
+function getDiscordCreationDate(id: string) {
+  try {
+    const timestamp = Number((BigInt(id) >> 22n) + 1420070400000n);
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch (e) {
+    return "Unknown";
+  }
+}
 
 export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, isLoading?: boolean }) {
   const discordId = "765458490248265769";
@@ -31,6 +41,9 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
 
   const user = lanyard?.discord_user;
   const status = lanyard?.discord_status || "offline";
+  // Filter out custom status (type 4) to find actual games/apps like VS Code
+  const activity = lanyard?.activities?.find((a: any) => a.type === 0 || a.type === 1 || a.type === 2);
+  const memberSince = getDiscordCreationDate(discordId);
   
   const statusColors: Record<string, string> = {
     online: "bg-green-500",
@@ -53,46 +66,91 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
       rel="noreferrer"
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-[#5865F2]/10 p-7 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 transition-colors"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-[#5865F2]/10 p-5 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/50 transition-colors"
     >
       {/* Decorative Discord-like Background element */}
       <span className="pointer-events-none absolute -right-6 -top-6 select-none font-heading text-[160px] font-bold leading-none text-[#5865F2] opacity-5 transition-opacity group-hover:opacity-10">
         #
       </span>
 
-      <div className="relative z-10">
-        <div className="mb-4 relative h-12 w-12 flex items-center justify-center rounded-full bg-[#5865F2] text-white overflow-visible">
-          {user?.avatar ? (
-            <img 
-              src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`} 
-              alt="Discord Avatar" 
-              className="h-full w-full rounded-full object-cover border border-[#5865F2]/50"
-            />
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-            </svg>
-          )}
-          {/* Status Indicator */}
-          <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background ${statusColors[status]}`}></div>
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-[#5865F2] text-white">
+              {user?.avatar ? (
+                <img 
+                  src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`} 
+                  alt="Discord Avatar" 
+                  className="h-full w-full rounded-full object-cover border border-[#5865F2]/50"
+                />
+              ) : (
+                <span className="font-bold">?</span>
+              )}
+              <div className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background ${statusColors[status]}`}></div>
+            </div>
+            <div>
+              <h3 className="font-bold text-foreground leading-none text-[15px]">
+                {user?.display_name || user?.username || "Discord"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                {statusText[status]}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-end text-right">
+            <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Member Since</span>
+            <span className="text-xs font-mono text-zinc-300">{memberSince}</span>
+          </div>
         </div>
-        <h3 className="font-heading text-lg font-medium text-foreground">
-          {user?.username ? `@${user.username}` : "Let's Chat!"}
-        </h3>
-        <p className="mt-1 text-sm text-muted-foreground flex items-center gap-1.5">
-          <span className={`inline-block h-2 w-2 rounded-full ${statusColors[status]}`}></span>
-          {statusText[status]}
-        </p>
+
+        {activity ? (
+          <div className="mt-2 flex flex-col gap-2 rounded-xl bg-zinc-900/60 p-3 border border-white/5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {activity.type === 2 ? "Listening to" : activity.type === 1 ? "Streaming" : "Playing"}
+            </p>
+            <div className="flex items-start gap-3">
+              {activity.assets?.large_image && (
+                <div className="relative h-14 w-14 shrink-0 rounded-lg overflow-hidden bg-zinc-800">
+                  <img 
+                    src={activity.assets.large_image.startsWith('spotify:') 
+                      ? `https://i.scdn.co/image/${activity.assets.large_image.split(':')[1]}`
+                      : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png?size=128`}
+                    alt={activity.name}
+                    className="h-full w-full object-cover"
+                  />
+                  {activity.assets?.small_image && (
+                    <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-zinc-900 overflow-hidden bg-zinc-800">
+                      <img 
+                        src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png?size=64`}
+                        alt="Small Icon"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="flex flex-col min-w-0">
+                <span className="font-bold text-[13px] text-zinc-100 truncate">{activity.name}</span>
+                <span className="text-[12px] text-zinc-400 truncate">{activity.details}</span>
+                <span className="text-[12px] text-zinc-400 truncate">{activity.state}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 flex-1">
+            <h3 className="font-heading text-lg font-medium text-foreground">
+              Let's Chat!
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Terhubung dengan saya di Discord
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="relative z-10 mt-6 flex items-center justify-between border-t border-[#5865F2]/20 pt-4">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#5865F2]">
+      <div className="relative z-10 mt-5 flex items-center justify-between border-t border-[#5865F2]/20 pt-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5865F2]">
           Kirim Pesan
         </p>
         <span className="text-[#5865F2] transition-transform group-hover:translate-x-1">
