@@ -12,17 +12,26 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
   const [index, setIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (items.length === 0) return;
     const currentText = items[index];
     
     let timeout: NodeJS.Timeout;
+
+    if (isPaused) {
+      timeout = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
     
     if (isDeleting) {
       timeout = setTimeout(() => {
         setDisplayedText(currentText.slice(0, displayedText.length - 1));
-        if (displayedText.length <= 1) {
+        if (displayedText.length <= 1) { // 1 because after this render it becomes 0
           setIsDeleting(false);
           setIndex((prev) => (prev + 1) % items.length);
         }
@@ -31,20 +40,21 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
       timeout = setTimeout(() => {
         setDisplayedText(currentText.slice(0, displayedText.length + 1));
         if (displayedText.length === currentText.length) {
-          timeout = setTimeout(() => setIsDeleting(true), 2000);
+          setIsPaused(true);
         }
-      }, 50);
+      }, 70);
     }
     
     return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, index, items]);
+  }, [displayedText, isDeleting, isPaused, index, items]);
 
   if (items.length === 0) return null;
 
   return (
     <span className={className}>
+      <span className="text-emerald-500 mr-2">&gt;</span>
       {displayedText}
-      <span className="animate-pulse opacity-70">|</span>
+      <span className="animate-pulse opacity-100 text-zinc-400 font-light">|</span>
     </span>
   );
 }
@@ -228,14 +238,13 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]"
+            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em] flex items-center"
           >
             <RotatingText 
               items={(profileData?.profile?.hero_tagline || "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast")
                 .split("|")
                 .map((t: string) => t.trim())
-                .filter(Boolean)
-                .map((t: string) => (t.startsWith(">") ? t : `> ${t}`))} 
+                .filter(Boolean)} 
             />
           </motion.div>
 
