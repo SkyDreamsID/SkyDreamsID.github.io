@@ -5,6 +5,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "next-themes";
 
+import { TerminalBoot } from "@/components/widgets/terminal-boot";
+
 const sans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -57,6 +59,7 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <TerminalBoot />
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>

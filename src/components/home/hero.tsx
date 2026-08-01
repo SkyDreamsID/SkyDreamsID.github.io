@@ -71,6 +71,24 @@ function RotatingText({ items, className }: { items: string[], className?: strin
   );
 }
 
+function GlitchText({ className }: { className?: string }) {
+  const [text, setText] = useState("ERR: NO_SIGNAL");
+  const chars = "!<>-_\\\\/[]{}—=+*^?#01";
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let result = "ERR: ";
+      for (let i = 0; i < 12; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      setText(result);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span className={`font-mono text-red-500 opacity-80 ${className}`}>{text}</span>;
+}
+
 function MarqueeText({ text, className }: { text: string; className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -171,9 +189,11 @@ export function Hero() {
           </h1>
           
           <div className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]">
-            {isProfileLoading ? "..." : (
+            {isProfileLoading || !profileData?.profile?.hero_tagline ? (
+              <GlitchText />
+            ) : (
               <RotatingText 
-                items={(profileData?.profile?.hero_tagline || "Mahasiswa D4 Teknologi Rekayasa Elektronika @ Politeknik Negeri Madiun").split("|").map((t: string) => t.trim())} 
+                items={profileData.profile.hero_tagline.split("|").map((t: string) => t.trim()).filter(Boolean)} 
               />
             )}
           </div>
