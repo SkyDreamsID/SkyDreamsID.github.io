@@ -175,7 +175,7 @@ export function Hero() {
                     <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
                     <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
                     <div className="flex flex-1 min-w-0">
-                      <span className="mr-1">:</span>
+                      <span className="whitespace-pre">: </span>
                       <MarqueeText 
                         text={isLastfmLoading ? "..." : (lastfmData?.nowPlaying ? `${lastfmData.nowPlaying.artist} - ${lastfmData.nowPlaying.title}` : "OFFLINE")} 
                         className="uppercase" 
