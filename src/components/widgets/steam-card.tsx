@@ -85,7 +85,7 @@ export function SteamCard({ data, isLoading }: { data: any; isLoading: boolean }
                 <img
                   src={data.avatar}
                   alt="Steam avatar"
-                  className="absolute inset-0 h-full w-full rounded-sm object-cover"
+                  className="absolute inset-0 h-full w-full rounded-none object-cover"
                 />
               )}
               {/* Avatar Frame (Scaled correctly to match Steam's 1.22x ratio) */}
