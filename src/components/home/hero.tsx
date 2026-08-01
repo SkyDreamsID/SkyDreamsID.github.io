@@ -144,7 +144,7 @@ export function Hero() {
             
             {/* Scanline overlay */}
             <div 
-              className="pointer-events-none absolute inset-0 z-10 opacity-60 mix-blend-overlay rounded-2xl"
+              className="animate-scanlines pointer-events-none absolute inset-0 z-10 opacity-60 mix-blend-overlay rounded-2xl"
               style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)" }}
             ></div>
             
