@@ -21,19 +21,21 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
     
     if (isDeleting) {
       timeout = setTimeout(() => {
-        setDisplayedText(currentText.slice(0, displayedText.length - 1));
-        if (displayedText.length <= 1) { // keep the "> " prefix if it exists
+        const nextText = currentText.slice(0, displayedText.length - 1);
+        setDisplayedText(nextText);
+        if (nextText.length === 0) { 
           setIsDeleting(false);
           setIndex((prev) => (prev + 1) % items.length);
         }
-      }, 10);
+      }, 30);
     } else {
       timeout = setTimeout(() => {
-        setDisplayedText(currentText.slice(0, displayedText.length + 1));
-        if (displayedText.length === currentText.length) {
-          timeout = setTimeout(() => setIsDeleting(true), 2000);
+        const nextText = currentText.slice(0, displayedText.length + 1);
+        setDisplayedText(nextText);
+        if (nextText.length === currentText.length) {
+          timeout = setTimeout(() => setIsDeleting(true), 1000); // reduced pause time
         }
-      }, 20);
+      }, 50);
     }
     
     return () => clearTimeout(timeout);
@@ -236,12 +238,13 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]"
           >
+            <span className="text-zinc-400 font-bold">{"> "}</span>
             <RotatingText 
               items={(profileData?.profile?.hero_tagline || "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast")
                 .split("|")
                 .map((t: string) => t.trim())
                 .filter(Boolean)
-                .map((t: string) => (t.startsWith(">") ? t : `> ${t}`))} 
+                .map((t: string) => t.replace(/^>\s*/, ""))} 
             />
           </motion.div>
 
