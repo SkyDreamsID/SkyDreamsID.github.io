@@ -1,6 +1,7 @@
 "use client";
 
-import { Disc3, Trophy, Headphones, Music2 } from "lucide-react";
+import { useState } from "react";
+import { Disc3, Trophy, Music2 } from "lucide-react";
 
 interface LastfmCardProps {
   data?: {
@@ -13,6 +14,7 @@ interface LastfmCardProps {
 
 export function LastfmCard({ data, isLoading }: LastfmCardProps) {
   const defaultUrl = "https://www.last.fm/user/rifkiekap07";
+  const [activeTab, setActiveTab] = useState<"artists" | "albums" | "tracks">("artists");
   
   // Pisah Top Artists jadi 2 bagian (1-5 dan 6-10) jika ada
   const topArtists = data?.topArtists || [];
@@ -37,7 +39,7 @@ export function LastfmCard({ data, isLoading }: LastfmCardProps) {
   return (
     <div className="flex h-full w-full flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
       {/* Header Utama */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 md:mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-emerald-500">
           <Disc3 size={14} />
           Last.fm Statistics
@@ -52,8 +54,99 @@ export function LastfmCard({ data, isLoading }: LastfmCardProps) {
         </a>
       </div>
 
-      {/* Grid 4 Kolom (Balanced) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+      {/* Tab Navigation (Mobile Only) */}
+      <div className="flex md:hidden items-center justify-around gap-1 mb-4 p-1 bg-zinc-950/60 rounded-lg border border-zinc-800/80">
+        <button
+          onClick={() => setActiveTab("artists")}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-semibold transition-all ${
+            activeTab === "artists"
+              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Trophy size={13} />
+          Artists
+        </button>
+        <button
+          onClick={() => setActiveTab("albums")}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-semibold transition-all ${
+            activeTab === "albums"
+              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Disc3 size={13} />
+          Albums
+        </button>
+        <button
+          onClick={() => setActiveTab("tracks")}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-semibold transition-all ${
+            activeTab === "tracks"
+              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Music2 size={13} />
+          Tracks
+        </button>
+      </div>
+
+      {/* Content View - Mobile Tabbed */}
+      <div className="block md:hidden">
+        {activeTab === "artists" && (
+          <div>
+            {isLoading ? <SkeletonRows /> : (
+              <div className="space-y-2">
+                {artists1to5.length > 0 ? artists1to5.map((artist, idx) => (
+                  <a key={idx} href={artist.url || defaultUrl} target="_blank" rel="noreferrer" className="flex justify-between items-center group py-0.5">
+                    <span className="font-mono text-xs text-zinc-400 truncate pr-2 group-hover:text-emerald-400">{idx + 1}. {artist.name}</span>
+                    <span className="font-mono text-[10px] text-zinc-600 shrink-0">{artist.playcount}x</span>
+                  </a>
+                )) : (
+                  <span className="text-xs text-zinc-600">Data not available</span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "albums" && (
+          <div>
+            {isLoading ? <SkeletonRows /> : (
+              <div className="space-y-2">
+                {topAlbums.length > 0 ? topAlbums.slice(0, 5).map((album, idx) => (
+                  <a key={idx} href={album.url || defaultUrl} target="_blank" rel="noreferrer" className="flex justify-between items-center group py-0.5">
+                    <span className="font-mono text-xs text-zinc-400 truncate pr-2 group-hover:text-emerald-400">{idx + 1}. {album.name}</span>
+                    <span className="font-mono text-[10px] text-zinc-600 shrink-0">{album.playcount}x</span>
+                  </a>
+                )) : (
+                  <span className="text-xs text-zinc-600">Data not available</span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "tracks" && (
+          <div>
+            {isLoading ? <SkeletonRows /> : (
+              <div className="space-y-2">
+                {topTracks.length > 0 ? topTracks.slice(0, 5).map((track, idx) => (
+                  <a key={idx} href={track.url || defaultUrl} target="_blank" rel="noreferrer" className="flex justify-between items-center group py-0.5">
+                    <span className="font-mono text-xs text-zinc-400 truncate pr-2 group-hover:text-emerald-400">{idx + 1}. {track.title}</span>
+                    <span className="font-mono text-[10px] text-zinc-600 shrink-0">{track.playcount}x</span>
+                  </a>
+                )) : (
+                  <span className="text-xs text-zinc-600">Data not available</span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Grid 4 Kolom - Desktop Only */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
         
         {/* Kolom 1 & 2: Top Artists (Unified) */}
         <div className="flex flex-col md:col-span-2">

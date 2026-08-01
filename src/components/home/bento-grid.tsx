@@ -72,7 +72,7 @@ export function BentoGrid() {
           </div>
 
           {/* Last.fm Statistik (Full width bottom) */}
-          <div className="sm:col-span-2 lg:col-span-3">
+          <div className="sm:col-span-2 lg:col-span-3 h-auto sm:h-full">
             <LastfmCard data={lastfmData} isLoading={isLastfmLoading} />
           </div>
 
