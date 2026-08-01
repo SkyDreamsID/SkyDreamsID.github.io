@@ -5,7 +5,39 @@ import { fetchSkyDreamsAPI, HomeResponse, LastfmResponse } from "@/services/api"
 import { ArrowRight, MapPin, Target, Radio, Clock, Zap } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-icons";
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
+function RotatingText({ items, className }: { items: string[], className?: string }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (items.length <= 1) return;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % items.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [items]);
+
+  if (items.length === 0) return null;
+  if (items.length === 1) return <span className={className}>{items[0]}</span>;
+
+  return (
+    <div className={`relative inline-block overflow-hidden h-[1.2em] w-full align-bottom ${className || ""}`}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="absolute w-full whitespace-nowrap text-left"
+        >
+          {items[index]}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function MarqueeText({ text, className }: { text: string; className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,17 +130,36 @@ export function Hero() {
         
         {/* Left Column (7) */}
         <div className="flex flex-col justify-start lg:col-span-7 lg:pt-2">
-          <h1 className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
+          >
             Halo, saya <br className="hidden sm:block" />
             <span className="text-emerald-500">{isProfileLoading ? "..." : (profileData?.profile?.hero_name || "Rifki Eka Putra")}</span>
-          </h1>
+          </motion.h1>
           
-          <h2 className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl">
-            {isProfileLoading ? "..." : (profileData?.profile?.hero_tagline || "Mahasiswa D4 Teknologi Rekayasa Elektronika @ Politeknik Negeri Madiun")}
-          </h2>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-zinc-300 sm:text-xl h-[1.5em]"
+          >
+            {isProfileLoading ? "..." : (
+              <RotatingText 
+                items={(profileData?.profile?.hero_tagline || "Mahasiswa D4 Teknologi Rekayasa Elektronika @ Politeknik Negeri Madiun").split("|").map((t: string) => t.trim())} 
+              />
+            )}
+          </motion.div>
 
           {/* Buttons */}
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center gap-4"
+          >
             <a
               href="#projects"
               className="group inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-zinc-200"
@@ -122,10 +173,15 @@ export function Hero() {
             >
               Kontak
             </a>
-          </div>
+          </motion.div>
 
           {/* Social Icons */}
-          <div className="mt-8 flex items-center gap-5 text-zinc-400">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-8 flex items-center gap-5 text-zinc-400"
+          >
             <a href="https://github.com/SkyDreamsID" target="_blank" rel="noreferrer" className="transition-colors hover:text-emerald-500">
               <GithubIcon className="h-5 w-5" />
             </a>
@@ -135,7 +191,7 @@ export function Hero() {
             <a href="https://instagram.com" target="_blank" rel="noreferrer" className="transition-colors hover:text-emerald-500">
               <InstagramIcon className="h-5 w-5" />
             </a>
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Column (5) - Pip-Boy 3000 HUD */}
