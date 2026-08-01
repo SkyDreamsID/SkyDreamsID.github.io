@@ -8,7 +8,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 // Helper to get Discord account creation date from Snowflake ID
 function getDiscordCreationDate(id: string) {
   try {
-    const timestamp = Number((BigInt(id) >> 22n) + 1420070400000n);
+    const timestamp = Number((BigInt(id) >> BigInt(22)) + BigInt(1420070400000));
     const date = new Date(timestamp);
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   } catch (e) {

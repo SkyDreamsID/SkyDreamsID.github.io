@@ -17,44 +17,54 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
   useEffect(() => {
     if (items.length === 0) return;
     const currentText = items[index];
-    
-    let timeout: NodeJS.Timeout;
-    
-    if (isDeleting) {
-      timeout = setTimeout(() => {
-        const nextText = currentText.slice(0, displayedText.length - 1);
-        setDisplayedText(nextText);
-        if (nextText.length === 0) { 
-          setIsDeleting(false);
-          setIndex((prev) => (prev + 1) % items.length);
-        }
-      }, 30);
+
+    let timer: NodeJS.Timeout;
+
+    if (isWaiting) {
+      // Teks selesai ketik penuh -> jeda & berkedip (1200ms)
+      timer = setTimeout(() => {
+        setIsWaiting(false);
+        setIsDeleting(true);
+      }, 1200);
+    } else if (isDeleting) {
+      // Hapus karakter satu per satu (45ms per karakter)
+      if (displayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentText.slice(0, displayedText.length - 1));
+        }, 45);
+      } else {
+        setIsDeleting(false);
+        setIndex((prev) => (prev + 1) % items.length);
+      }
     } else {
-      timeout = setTimeout(() => {
-        const nextText = currentText.slice(0, displayedText.length + 1);
-        setDisplayedText(nextText);
-        if (nextText.length === currentText.length) {
-          setIsWaiting(true);
-          timeout = setTimeout(() => {
-            setIsWaiting(false);
-            setIsDeleting(true);
-          }, 1000); // reduced pause time
-        }
-      }, 50);
+      // Ketik karakter satu per satu (90ms per karakter)
+      if (displayedText.length < currentText.length) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentText.slice(0, displayedText.length + 1));
+        }, 90);
+      } else {
+        // Seluruh teks sudah keload -> masuk mode WAITING (kursor mulai berkedip)
+        setIsWaiting(true);
+      }
     }
-    
-    return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, index, items]);
+
+    return () => clearTimeout(timer);
+  }, [displayedText, isDeleting, isWaiting, index, items]);
 
   if (items.length === 0) return null;
 
   return (
     <span className={className}>
       {displayedText}
-      <motion.span 
+      <motion.span
+        key={isWaiting ? "waiting" : "typing"}
         animate={isWaiting ? { opacity: [1, 0, 1] } : { opacity: 1 }}
-        transition={isWaiting ? { repeat: Infinity, duration: 0.8, ease: "circInOut" } : { duration: 0 }}
-        className="inline-block text-emerald-500 font-bold"
+        transition={
+          isWaiting
+            ? { repeat: Infinity, duration: 0.5, ease: "easeInOut" }
+            : { duration: 0 }
+        }
+        className="inline-block text-emerald-500 font-bold ml-0.5"
       >
         |
       </motion.span>
