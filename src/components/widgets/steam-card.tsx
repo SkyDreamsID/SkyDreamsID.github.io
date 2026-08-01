@@ -12,7 +12,7 @@ export function SteamCard({ data, isLoading }: { data: any; isLoading: boolean }
   // Karena keterbatasan API Steam publik tanpa key, kita belum bisa fetch frame otomatis.
   // Lu bisa masukin URL avatar frame lu di sini!
   // Cara dapet URL frame lu: Buka profil Steam lu di browser -> Klik kanan di frame avatar lu -> Inspect -> Copy link gambarnya yang berakhiran .png
-  const avatarFrameUrl = ""; // Kosongin dulu biar gak error broken image
+  const avatarFrameUrl = "https://shared.fastly.steamstatic.com/community_assets/images/items/3099240/b3646c59c6a05ce8cdd1b879c691e1b95fd79bf0.png";
 
   return (
     <Link href={profileUrl} target="_blank" className="group block h-full no-underline">
