@@ -144,10 +144,90 @@ function MarqueeText({ text, className }: { text: string; className?: string }) 
   );
 }
 
+function randomChar() {
+  const chars = "!@#$%^&*()_+[]{}:;<>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return chars.charAt(Math.floor(Math.random() * chars.length));
+}
+
+function MatrixText({ text, delayMs, speedMs = 30 }: { text: string, delayMs: number, speedMs?: number }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setStarted(true);
+      setDisplayedText(text.split('').map(c => c === ' ' ? ' ' : randomChar()).join(''));
+    }, delayMs);
+    return () => clearTimeout(timeout);
+  }, [delayMs, text]);
+
+  useEffect(() => {
+    if (!started) return;
+    
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex >= text.length) {
+        clearInterval(interval);
+        setDisplayedText(text);
+        return;
+      }
+      
+      setDisplayedText((prev) => {
+        const chars = prev.split('');
+        chars[currentIndex] = text[currentIndex];
+        
+        for (let i = currentIndex + 1; i < chars.length; i++) {
+          if (text[i] !== ' ') {
+            chars[i] = randomChar();
+          } else {
+            chars[i] = ' ';
+          }
+        }
+        return chars.join('');
+      });
+      currentIndex++;
+    }, speedMs);
+    
+    return () => clearInterval(interval);
+  }, [started, text, speedMs]);
+
+  if (!started) return null;
+  return <div className="min-h-[1.5em] w-full">{displayedText}</div>;
+}
+
 export function Hero() {
   const { data: homeData, isLoading: isHomeLoading, error: homeError } = useSWR<HomeResponse>("/home", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: lastfmData, isLoading: isLastfmLoading, error: lastfmError } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: profileData, isLoading: isProfileLoading } = useSWR<any>("/profile", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+
+  const [pipboyBootPhase, setPipboyBootPhase] = useState(0);
+  
+  useEffect(() => {
+     if (sessionStorage.getItem("pipboyBooted")) {
+       setPipboyBootPhase(3);
+       return;
+     }
+
+     const t1 = setTimeout(() => setPipboyBootPhase(1), 500); 
+     const t2 = setTimeout(() => setPipboyBootPhase(2), 2500); 
+     const t3 = setTimeout(() => {
+       setPipboyBootPhase(3);
+       sessionStorage.setItem("pipboyBooted", "true");
+     }, 4000); 
+
+     return () => {
+       clearTimeout(t1);
+       clearTimeout(t2);
+       clearTimeout(t3);
+     };
+  }, []);
+
+  const handleSkipPipboy = () => {
+     if (pipboyBootPhase < 3) {
+       setPipboyBootPhase(3);
+       sessionStorage.setItem("pipboyBooted", "true");
+     }
+  };
 
   const systemState = (isHomeLoading || isLastfmLoading) 
     ? "ESTABLISHING CONNECTION..." 
@@ -241,7 +321,10 @@ export function Hero() {
 
         {/* Right Column (5) - Pip-Boy 3000 HUD */}
         <div className="flex items-center justify-center lg:col-span-5 lg:items-start lg:justify-end lg:pt-0">
-          <div className="animate-pipboy relative w-full max-w-[420px] rounded-2xl border-2 border-[#00FF66]/80 bg-zinc-950/90 p-5 shadow-[0_0_25px_rgba(0,255,102,0.2)] backdrop-blur-md transition-all">
+          <div 
+            onClick={handleSkipPipboy}
+            className="animate-pipboy relative w-full max-w-[420px] rounded-2xl border-2 border-[#00FF66]/80 bg-zinc-950/90 p-5 shadow-[0_0_25px_rgba(0,255,102,0.2)] backdrop-blur-md transition-all min-h-[300px] cursor-pointer overflow-hidden"
+          >
             
             {/* Scanline overlay */}
             <div 
@@ -249,60 +332,85 @@ export function Hero() {
               style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)" }}
             ></div>
             
-            <div className="animate-crt-text relative z-20 flex flex-col font-['Monofonto'] text-[13px] leading-relaxed text-[#00FF66] [text-shadow:0_0_5px_rgba(0,255,102,0.7)] sm:text-[14px]">
+            <div className="animate-crt-text relative z-20 flex flex-col font-['Monofonto'] text-[13px] leading-relaxed text-[#00FF66] [text-shadow:0_0_5px_rgba(0,255,102,0.7)] sm:text-[14px] h-full">
               
-              {/* Header */}
-              <div className="mb-4 flex items-center gap-2 border-b-2 border-[#00FF66]/40 pb-2">
-                <Zap size={15} className="text-[#00FF66]" />
-                <span className="font-bold tracking-widest text-[16px]">LIVE STATUS</span>
-                <span className="animate-pulse text-[16px]">█</span>
-              </div>
-
-              {/* Data Rows */}
-              <div className="space-y-3">
-                <div className="flex items-start gap-2.5 w-full">
-                  <MapPin size={15} className="shrink-0 mt-0.5 opacity-80" />
-                  <span className="w-24 shrink-0 opacity-80 tracking-wider">LOCATION</span>
-                  <span className="uppercase">: {(isProfileLoading || isHomeLoading) ? "..." : (profileData?.profile?.location || homeData?.status?.location || "Madiun, Indonesia")}</span>
+              {pipboyBootPhase === 0 && (
+                <div className="flex h-full min-h-[260px] items-start">
+                  <span className="animate-pulse opacity-50 block mt-2">_</span>
                 </div>
+              )}
+              
+              {(pipboyBootPhase === 1 || pipboyBootPhase === 2) && (
+                <div className="space-y-1 min-h-[260px] flex flex-col pt-2 uppercase">
+                  <MatrixText text="> INITIALIZING VAULT-TEC OS v4.2..." delayMs={0} speedMs={20} />
+                  <MatrixText text="> MOUNTING CORE: NEXT.JS & LANYARD API... [OK]" delayMs={500} speedMs={15} />
+                  <MatrixText text="> CHECKING PIP-BOY STATUS... 100 HP / OPTIMAL" delayMs={1000} speedMs={10} />
                   
-                  <div className="flex items-start gap-2.5 w-full">
-                    <Target size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-24 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
-                    <span className="uppercase line-clamp-1">: {isHomeLoading ? "..." : (homeData?.status?.activity || "PLC & System Automation")}</span>
+                  {pipboyBootPhase === 2 && (
+                    <>
+                      <MatrixText text="> CONNECTING TO SKYDREAMSID API..." delayMs={0} speedMs={10} />
+                      <MatrixText text="> SYSTEM READY." delayMs={500} speedMs={15} />
+                    </>
+                  )}
+                  <span className="animate-pulse opacity-50 block mt-2">_</span>
+                </div>
+              )}
+
+              {pipboyBootPhase === 3 && (
+                <>
+                  {/* Header */}
+                  <div className="mb-4 flex items-center gap-2 border-b-2 border-[#00FF66]/40 pb-2">
+                    <Zap size={15} className="text-[#00FF66]" />
+                    <span className="font-bold tracking-widest text-[16px]">LIVE STATUS</span>
+                    <span className="animate-pulse text-[16px]">█</span>
                   </div>
-                  
-                  <div className="flex items-start gap-2.5 w-full">
-                    <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
-                    <div className="flex flex-1 min-w-0">
-                      <span className="whitespace-pre">: </span>
-                      <MarqueeText 
-                        text={isLastfmLoading ? "..." : (lastfmData?.nowPlaying ? `${lastfmData.nowPlaying.artist} - ${lastfmData.nowPlaying.title}` : "OFFLINE")} 
-                        className="uppercase" 
-                      />
+
+                  {/* Data Rows */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2.5 w-full">
+                      <MapPin size={15} className="shrink-0 mt-0.5 opacity-80" />
+                      <span className="w-24 shrink-0 opacity-80 tracking-wider">LOCATION</span>
+                      <span className="uppercase">: {(isProfileLoading || isHomeLoading) ? "..." : (profileData?.profile?.location || homeData?.status?.location || "Madiun, Indonesia")}</span>
+                    </div>
+                      
+                    <div className="flex items-start gap-2.5 w-full">
+                      <Target size={15} className="shrink-0 mt-0.5 opacity-80" />
+                      <span className="w-24 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
+                      <span className="uppercase line-clamp-1">: {isHomeLoading ? "..." : (homeData?.status?.activity || "PLC & System Automation")}</span>
+                    </div>
+                      
+                    <div className="flex items-start gap-2.5 w-full">
+                      <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
+                      <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
+                      <div className="flex flex-1 min-w-0">
+                        <span className="whitespace-pre">: </span>
+                        <MarqueeText 
+                          text={isLastfmLoading ? "..." : (lastfmData?.nowPlaying ? `${lastfmData.nowPlaying.artist} - ${lastfmData.nowPlaying.title}` : "OFFLINE")} 
+                          className="uppercase" 
+                        />
+                      </div>
+                    </div>
+                      
+                    <div className="flex items-start gap-2.5 w-full">
+                      <Clock size={15} className="shrink-0 mt-0.5 opacity-80" />
+                      <span className="w-24 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
+                      <span className="uppercase">: {time || "00:00:00 WIB"}</span>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-2.5 w-full">
-                    <Clock size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-24 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
-                    <span className="uppercase">: {time || "00:00:00 WIB"}</span>
-                  </div>
-                </div>
 
-                {/* Footer */}
-                <div className="mt-6 border-t-2 border-[#00FF66]/40 pt-3 text-center">
-                  <span className={`tracking-widest ${systemState.includes("CRITICAL") ? "text-red-500 animate-pulse" : ""}`}>
-                    SYSTEM STATE: {systemState}
-                  </span>
-                </div>
+                  {/* Footer */}
+                  <div className="mt-6 border-t-2 border-[#00FF66]/40 pt-3 text-center">
+                    <span className={`tracking-widest ${systemState.includes("CRITICAL") ? "text-red-500 animate-pulse" : ""}`}>
+                      SYSTEM STATE: {systemState}
+                    </span>
+                  </div>
+                </>
+              )}
                 
-              </div>
             </div>
           </div>
-
         </div>
-      </section>
+      </div>
+    </section>
   );
 }
