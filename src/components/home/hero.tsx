@@ -12,6 +12,7 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
   const [index, setIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
 
   useEffect(() => {
     if (items.length === 0) return;
@@ -33,7 +34,11 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
         const nextText = currentText.slice(0, displayedText.length + 1);
         setDisplayedText(nextText);
         if (nextText.length === currentText.length) {
-          timeout = setTimeout(() => setIsDeleting(true), 1000); // reduced pause time
+          setIsWaiting(true);
+          timeout = setTimeout(() => {
+            setIsWaiting(false);
+            setIsDeleting(true);
+          }, 1000); // reduced pause time
         }
       }, 50);
     }
@@ -47,8 +52,8 @@ function RotatingText({ items, className }: { items: string[]; className?: strin
     <span className={className}>
       {displayedText}
       <motion.span 
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ repeat: Infinity, duration: 0.8, ease: "circInOut" }}
+        animate={isWaiting ? { opacity: [1, 0, 1] } : { opacity: 1 }}
+        transition={isWaiting ? { repeat: Infinity, duration: 0.8, ease: "circInOut" } : { duration: 0 }}
         className="inline-block text-emerald-500 font-bold"
       >
         |
