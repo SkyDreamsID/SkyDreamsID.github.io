@@ -161,19 +161,19 @@ export function Hero() {
               <div className="space-y-3">
                 <div className="flex items-start gap-2.5 w-full">
                   <MapPin size={15} className="shrink-0 mt-0.5 opacity-80" />
-                  <span className="w-20 shrink-0 opacity-80 tracking-wider">LOCATION</span>
+                  <span className="w-24 shrink-0 opacity-80 tracking-wider">LOCATION</span>
                   <span className="uppercase">: {(isProfileLoading || isHomeLoading) ? "..." : (profileData?.profile?.location || homeData?.status?.location || "Madiun, Indonesia")}</span>
                 </div>
                   
                   <div className="flex items-start gap-2.5 w-full">
                     <Target size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-20 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
+                    <span className="w-24 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
                     <span className="uppercase line-clamp-1">: {isHomeLoading ? "..." : (homeData?.status?.activity || "PLC & System Automation")}</span>
                   </div>
                   
                   <div className="flex items-start gap-2.5 w-full">
                     <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-20 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
+                    <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
                     <div className="flex flex-1 min-w-0">
                       <span className="mr-1">:</span>
                       <MarqueeText 
@@ -185,7 +185,7 @@ export function Hero() {
                   
                   <div className="flex items-start gap-2.5 w-full">
                     <Clock size={15} className="shrink-0 mt-0.5 opacity-80" />
-                    <span className="w-20 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
+                    <span className="w-24 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
                     <span className="uppercase">: {time || "00:00:00 WIB"}</span>
                   </div>
                 </div>
