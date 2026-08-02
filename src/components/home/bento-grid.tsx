@@ -8,8 +8,10 @@ import { VisualJournalCard } from "@/components/widgets/visual-journal-card";
 import { LastfmCard } from "@/components/widgets/lastfm-card";
 import { KnowledgeBaseCard } from "@/components/widgets/knowledge-base-card";
 import { QuoteCard } from "@/components/widgets/quote-card";
+import { useLanguage } from "@/context/language-context";
 
 export function BentoGrid() {
+  const { language, t } = useLanguage();
   const { data: homeData, isLoading: isHomeLoading } = useSWR<HomeResponse>("/home", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: lastfmData, isLoading: isLastfmLoading } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: steamData, isLoading: isSteamLoading } = useSWR<SteamResponse>("/steam", fetchSkyDreamsAPI, { refreshInterval: 60000 });
@@ -21,11 +23,8 @@ export function BentoGrid() {
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="mb-14">
-          <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">
-            Digital Life
-          </span>
           <h2 className="font-heading text-3xl font-bold text-zinc-50 sm:text-4xl">
-            Ecosystem
+            {t.bento.title}
           </h2>
         </div>
 

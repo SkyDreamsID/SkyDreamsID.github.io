@@ -3,14 +3,15 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800";
 
-function formatDate(dateStr: string | null): string {
+function formatDate(dateStr: string | null, lang: string): string {
   if (!dateStr) return "";
   try {
-    return new Date(dateStr).toLocaleDateString("id-ID", {
+    return new Date(dateStr).toLocaleDateString(lang === "en" ? "en-US" : "id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -21,6 +22,7 @@ function formatDate(dateStr: string | null): string {
 }
 
 export function VisualJournalCard({ data, isLoading }: { data: any; isLoading: boolean }) {
+  const { language } = useLanguage();
   const href = data?.url || "https://jurnalvisual.vercel.app";
   const title = data?.latestPostTitle;
   const thumbnail = data?.thumbnailUrl;
@@ -49,9 +51,12 @@ export function VisualJournalCard({ data, isLoading }: { data: any; isLoading: b
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
         {/* Top badge */}
-        <div className="absolute left-4 top-4">
-          <span className="rounded-md bg-black/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/80 backdrop-blur-md">
+        <div className="absolute left-4 top-4 flex items-center gap-2">
+          <span className="rounded-md bg-black/60 border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/80 backdrop-blur-md">
             Visual Journal
+          </span>
+          <span className="rounded-md bg-emerald-950/80 border border-emerald-500/50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-400 backdrop-blur-md">
+            {language === "en" ? "Latest Post" : "Postingan Terbaru"}
           </span>
         </div>
 
@@ -69,7 +74,7 @@ export function VisualJournalCard({ data, isLoading }: { data: any; isLoading: b
           </p>
           <p className="font-mono text-[11px] tracking-wide text-white/60">
             {location ? `${location} · ` : ""}
-            {formatDate(date)}
+            {formatDate(date, language)}
           </p>
         </div>
       </motion.div>

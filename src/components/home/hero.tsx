@@ -8,6 +8,8 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 
+import { useLanguage } from "@/context/language-context";
+
 function RotatingText({ items, className }: { items: string[]; className?: string }) {
   const [index, setIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
@@ -176,6 +178,7 @@ function MatrixText({ text, delayMs = 0, speedMs = 15 }: { text: string; delayMs
 }
 
 export function Hero() {
+  const { language, t } = useLanguage();
   const { data: homeData, isLoading: isHomeLoading, error: homeError } = useSWR<HomeResponse>("/home", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: lastfmData, isLoading: isLastfmLoading, error: lastfmError } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: profileData, isLoading: isProfileLoading } = useSWR<any>("/profile", fetchSkyDreamsAPI, { refreshInterval: 60000 });
@@ -241,10 +244,10 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-heading text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
+            className="font-heading text-4xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
           >
-            Halo, saya <br className="hidden sm:block" />
-            <span className="text-emerald-500">{heroName}</span>
+            <span className="block">{t.hero.greeting}</span>
+            <span className="block text-emerald-500">{heroName}</span>
           </motion.h1>
           
           <motion.div 
@@ -255,7 +258,12 @@ export function Hero() {
           >
             <span className="text-zinc-400 font-bold">{"> "}</span>
             <RotatingText 
-              items={(profileData?.profile?.hero_tagline || "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast")
+              items={(
+                (language === "en" 
+                  ? (profileData?.profile?.hero_tagline_en || profileData?.profile?.hero_tagline)
+                  : profileData?.profile?.hero_tagline) || 
+                "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast"
+              )
                 .split("|")
                 .map((t: string) => t.trim())
                 .filter(Boolean)
@@ -274,14 +282,14 @@ export function Hero() {
               href="#projects"
               className="group inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-zinc-200"
             >
-              Lihat Proyek
+              {t.hero.seeProjects}
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </a>
             <a
               href="#contact"
               className="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:bg-zinc-800 hover:text-zinc-50"
             >
-              Kontak
+              {t.hero.contact}
             </a>
           </motion.div>
 

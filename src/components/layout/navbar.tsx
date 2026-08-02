@@ -1,21 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-
-const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Interests", href: "#interests" },
-  { label: "Ecosystem", href: "#ecosystem" },
-];
+import { useLanguage } from "@/context/language-context";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
+
+  const navLinks = [
+    { label: t.nav.home, href: "#home" },
+    { label: t.nav.about, href: "#about" },
+    { label: t.nav.projects, href: "#projects" },
+    { label: t.nav.interests, href: "#interests" },
+    { label: t.nav.ecosystem, href: "#ecosystem" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -73,9 +75,15 @@ export function Navbar() {
 
         {/* Right: Lang & Status */}
         <div className="hidden md:flex items-center gap-4">
-          <div className="font-mono text-xs font-medium text-zinc-400">
-            <span className="text-zinc-100">ID</span> | EN
-          </div>
+          {/* Desktop Language Button */}
+          <button
+            onClick={() => setLanguage(language === "id" ? "en" : "id")}
+            className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 font-mono text-xs font-bold text-emerald-400 transition-all hover:border-emerald-500/40 hover:bg-zinc-800"
+          >
+            <Globe size={14} />
+            <span>{language.toUpperCase()}</span>
+          </button>
+
           <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
@@ -88,13 +96,16 @@ export function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <div className="flex items-center gap-4 md:hidden">
-          <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-2 py-1">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-            </span>
-          </div>
+        <div className="flex items-center gap-3 md:hidden">
+          {/* Mobile Language Button */}
+          <button
+            onClick={() => setLanguage(language === "id" ? "en" : "id")}
+            className="flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-xs font-bold text-emerald-400 transition-colors hover:border-emerald-500/40"
+          >
+            <Globe size={13} />
+            <span>{language.toUpperCase()}</span>
+          </button>
+
           <button
             onClick={() => setMobileOpen(true)}
             className="text-zinc-100 hover:text-emerald-500"
@@ -136,8 +147,18 @@ export function Navbar() {
               ))}
             </nav>
             <div className="mt-8 flex items-center justify-between border-t border-zinc-800 pt-6">
-              <div className="font-mono text-sm text-zinc-400">
-                <span className="text-zinc-100">ID</span> | EN
+              <button
+                onClick={() => setLanguage(language === "id" ? "en" : "id")}
+                className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 font-mono text-xs font-bold text-emerald-400"
+              >
+                <Globe size={14} />
+                <span>{language.toUpperCase()}</span>
+              </button>
+              <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                </span>
+                <span className="font-mono text-[10px] font-semibold text-emerald-500">API LIVE</span>
               </div>
             </div>
           </motion.div>

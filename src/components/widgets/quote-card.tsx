@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import useSWR from "swr";
+import { useLanguage } from "@/context/language-context";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -17,6 +18,7 @@ function getDiscordCreationDate(id: string) {
 }
 
 export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, isLoading?: boolean }) {
+  const { language } = useLanguage();
   const discordId = "765458490248265769";
   const { data: lanyardData, error } = useSWR(
     `https://api.lanyard.rest/v1/users/${discordId}`,
@@ -147,7 +149,7 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
               Let's Chat!
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Terhubung dengan saya di Discord
+              {language === "en" ? "Connect with me on Discord" : "Terhubung dengan saya di Discord"}
             </p>
           </div>
         )}
@@ -155,7 +157,7 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
 
       <div className="relative z-10 mt-auto pt-4 flex items-center justify-between border-t border-[#5865F2]/20">
         <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5865F2]">
-          Kirim Pesan
+          {language === "en" ? "Send Message" : "Kirim Pesan"}
         </p>
         <span className="text-[#5865F2] text-sm transition-transform group-hover:translate-x-1">
           →

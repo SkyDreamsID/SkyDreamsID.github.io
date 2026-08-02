@@ -3,6 +3,7 @@
 import { Terminal, Cpu, Camera, Train, Wrench, Laptop, Code, Music, Heart, Box } from "lucide-react";
 import useSWR from "swr";
 import { fetchSkyDreamsAPI } from "@/services/api";
+import { useLanguage } from "@/context/language-context";
 
 const iconMap: Record<string, React.ReactNode> = {
   laptop: <Laptop size={22} />,
@@ -24,6 +25,7 @@ interface HobbyCategory {
 }
 
 export function HobbyInterest() {
+  const { t } = useLanguage();
   const { data, isLoading } = useSWR<HobbyCategory[]>("/hobbies", fetchSkyDreamsAPI, {
     refreshInterval: 60000,
   });
@@ -35,10 +37,10 @@ export function HobbyInterest() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h2 className="font-heading text-3xl font-bold text-zinc-50 sm:text-4xl">
-            Hobby & Arsenal
+            {t.interests.title}
           </h2>
           <p className="mt-4 text-base text-zinc-400">
-            Alat dan ketertarikan di luar dunia akademik.
+            {t.interests.subtitle}
           </p>
         </div>
 
@@ -79,7 +81,7 @@ export function HobbyInterest() {
               );
             })
           ) : (
-            <p className="col-span-2 text-center text-sm text-zinc-500">Data belum tersedia.</p>
+            <p className="col-span-2 text-center text-sm text-zinc-500">{t.interests.empty}</p>
           )}
         </div>
       </div>

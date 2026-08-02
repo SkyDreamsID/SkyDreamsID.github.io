@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/language-context";
 
 export function KnowledgeBaseCard() {
+  const { language } = useLanguage();
+
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -14,10 +17,10 @@ export function KnowledgeBaseCard() {
       </span>
       <div className="mb-3 text-4xl">📖</div>
       <p className="font-heading text-lg font-medium text-foreground">
-        Catatanku
+        {language === "en" ? "My Notes" : "Catatanku"}
       </p>
       <p className="mt-1 font-sans text-sm font-light leading-relaxed text-muted-foreground">
-        Ruang catatan dan jurnal personal.
+        {language === "en" ? "Personal notes & journal space." : "Ruang catatan dan jurnal personal."}
         <br />
         Coming soon.
       </p>

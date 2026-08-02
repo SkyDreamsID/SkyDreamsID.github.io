@@ -5,8 +5,10 @@ import { GithubIcon } from "@/components/ui/brand-icons";
 import useSWR from "swr";
 import { fetchSkyDreamsAPI, ProjectResponse } from "@/services/api";
 import Link from "next/link";
+import { useLanguage } from "@/context/language-context";
 
 export function FeaturedProjects() {
+  const { t } = useLanguage();
   const { data, isLoading } = useSWR<ProjectResponse[]>("/projects", fetchSkyDreamsAPI, {
     refreshInterval: 60000,
   });
@@ -22,10 +24,10 @@ export function FeaturedProjects() {
         <div className="mb-12 flex items-end justify-between">
           <div>
             <h2 className="font-heading text-3xl font-bold text-zinc-50 sm:text-4xl">
-              Highlight Proyek
+              {t.projects.title}
             </h2>
             <p className="mt-4 text-base text-zinc-400">
-              Karya terpilih dari ekosistem digital.
+              {t.projects.subtitle}
             </p>
           </div>
           <Link
@@ -33,7 +35,7 @@ export function FeaturedProjects() {
             target="_blank"
             className="hidden items-center gap-2 font-mono text-sm font-medium text-emerald-500 hover:underline sm:flex"
           >
-            Lihat Semua <ArrowUpRight size={16} />
+            {t.projects.viewAll} <ArrowUpRight size={16} />
           </Link>
         </div>
 
@@ -86,7 +88,7 @@ export function FeaturedProjects() {
               </a>
             ))
           ) : (
-            <p className="col-span-3 text-center text-sm text-zinc-500">Belum ada proyek yang ditampilkan.</p>
+            <p className="col-span-3 text-center text-sm text-zinc-500">{t.projects.empty}</p>
           )}
         </div>
 
@@ -96,7 +98,7 @@ export function FeaturedProjects() {
           target="_blank"
           className="mt-8 flex items-center justify-center gap-2 font-mono text-sm font-medium text-emerald-500 hover:underline sm:hidden"
         >
-          Lihat Semua Repositori <ArrowUpRight size={16} />
+          {t.projects.viewAllRepos} <ArrowUpRight size={16} />
         </Link>
 
       </div>
