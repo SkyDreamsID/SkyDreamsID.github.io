@@ -28,19 +28,12 @@ export function About() {
               <span className="inline-block h-4 w-11/12 animate-pulse rounded bg-zinc-800"></span>
               <span className="inline-block h-4 w-3/4 animate-pulse rounded bg-zinc-800"></span>
             </div>
+          ) : data?.profile?.bio_id ? (
+            data.profile.bio_id.split("\n").map((paragraph: string, idx: number) => (
+              paragraph.trim() ? <p key={idx}>{paragraph}</p> : <br key={idx} />
+            ))
           ) : (
-            <>
-              <p>
-                {data?.profile?.bio_id || 
-                "Saya seorang mahasiswa D4 Teknologi Rekayasa Elektronika yang sangat tertarik dengan persimpangan antara perangkat keras (hardware) dan perangkat lunak (software)."}
-              </p>
-              <p>
-                Perjalanan saya cukup unik. Berangkat dari latar belakang mesin dan otomotif di SMK (Teknik Kendaraan Ringan), saya sempat nyemplung ke dunia perkeretaapian lewat PKL di Depo Lokomotif Madiun, sampai ngerasain jadi mekanik bengkel dan operator di berbagai tempat. Namun, rasa penasaran yang besar terhadap otomatisasi dan logika sistem akhirnya menarik saya banting setir ke dunia elektronika dan pemrograman.
-              </p>
-              <p>
-                Bagi saya, *coding* dan elektronika bukan cuma sekadar alat buat cari kerja, melainkan taman bermain untuk nge-wujudin ide gila. Melalui *Personal Hub* ini, saya mendokumentasikan jejak eksplorasi saya—mulai dari ngoprek Linux, bikin automasi IoT, sampai desain sistem web seperti ini.
-              </p>
-            </>
+            <p>Belum ada bio yang ditulis.</p>
           )}
         </div>
 

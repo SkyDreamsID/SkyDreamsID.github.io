@@ -31,6 +31,13 @@ export interface ProfileResponse {
   }>;
 }
 
+export interface UsesResponse {
+  workstation?: Array<{ name: string; detail: string; image_url?: string }>;
+  development?: Array<{ name: string; detail: string; image_url?: string }>;
+  multimedia?: Array<{ name: string; detail: string; image_url?: string }>;
+  [key: string]: Array<{ name: string; detail: string; image_url?: string }> | undefined;
+}
+
 export interface ProjectResponse {
   id: string;
   title: string;
