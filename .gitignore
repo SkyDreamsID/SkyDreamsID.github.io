@@ -41,14 +41,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Junk and sensitive files
-create-cards.js
-create-pages.js
-*blueprint*.md
-*blueprint*.txt
-BLUEPRINT.md
-Detail\ Diri.md
-dokumentasi\ skydreamsid-api.md
-personal_hub_desktop_*.png
-ROADMAP.md
-test_api.js
+# private & junk files
+/private/
