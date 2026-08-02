@@ -17,6 +17,18 @@ function getDiscordCreationDate(id: string) {
   }
 }
 
+function getDiscordAssetUrl(img?: string, appId?: string): string | null {
+  if (!img) return null;
+  if (img.startsWith("spotify:")) {
+    return `https://i.scdn.co/image/${img.split(":")[1]}`;
+  }
+  if (img.startsWith("mp:external/") || img.startsWith("external/")) {
+    const cleanImg = img.replace(/^mp:external\//, "external/");
+    return `https://media.discordapp.net/${cleanImg}`;
+  }
+  return `https://cdn.discordapp.com/app-assets/${appId}/${img}.png?size=128`;
+}
+
 export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, isLoading?: boolean }) {
   const { language } = useLanguage();
   const discordId = "765458490248265769";
@@ -119,16 +131,14 @@ export function QuoteCard({ data, isLoading: isExternalLoading }: { data?: any, 
               {activity.assets?.large_image && (
                 <div className="relative h-12 w-12 shrink-0 rounded-lg overflow-hidden bg-zinc-800">
                   <img 
-                    src={activity.assets.large_image.startsWith('spotify:') 
-                      ? `https://i.scdn.co/image/${activity.assets.large_image.split(':')[1]}`
-                      : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png?size=128`}
+                    src={getDiscordAssetUrl(activity.assets.large_image, activity.application_id) || ""} 
                     alt={activity.name}
                     className="h-full w-full object-cover"
                   />
                   {activity.assets?.small_image && (
                     <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-zinc-900 overflow-hidden bg-zinc-800">
                       <img 
-                        src={`https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png?size=64`}
+                        src={getDiscordAssetUrl(activity.assets.small_image, activity.application_id) || ""} 
                         alt="Small Icon"
                         className="h-full w-full object-cover"
                       />

@@ -191,7 +191,7 @@ export function LastfmCard({ data, isLoading }: LastfmCardProps) {
         {/* Kolom 3: Top Albums */}
         <div className="flex flex-col">
           <h4 className="flex items-center gap-1.5 font-heading text-sm font-bold text-zinc-300 mb-2 border-b border-zinc-800 pb-2">
-            <Disc3 size={14} className="text-emerald-500" /> Top Albums (Mo)
+            <Disc3 size={14} className="text-emerald-500" /> Top Albums (Monthly)
           </h4>
           {isLoading ? <SkeletonRows /> : (
             <div className="space-y-2 mt-2">
@@ -210,7 +210,7 @@ export function LastfmCard({ data, isLoading }: LastfmCardProps) {
         {/* Kolom 4: Top Tracks */}
         <div className="flex flex-col">
           <h4 className="flex items-center gap-1.5 font-heading text-sm font-bold text-zinc-300 mb-2 border-b border-zinc-800 pb-2">
-            <Music2 size={14} className="text-emerald-500" /> Top Tracks (Wk)
+            <Music2 size={14} className="text-emerald-500" /> Top Tracks (Weekly)
           </h4>
           {isLoading ? <SkeletonRows /> : (
             <div className="space-y-2 mt-2">
