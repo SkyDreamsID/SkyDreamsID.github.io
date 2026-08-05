@@ -13,10 +13,14 @@ import { useLanguage } from "@/context/language-context";
 export function BentoGrid() {
   const { language, t } = useLanguage();
   const { data: homeData, isLoading: isHomeLoading } = useSWR<HomeResponse>("/home", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: quotesData } = useSWR<any>("/general/quotes", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: lastfmData, isLoading: isLastfmLoading } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: steamData, isLoading: isSteamLoading } = useSWR<SteamResponse>("/steam", fetchSkyDreamsAPI, { refreshInterval: 60000 });
 
   const currentTrack = lastfmData?.nowPlaying || lastfmData?.recentTracks?.[0];
+  const activeQuote = quotesData && quotesData.length > 0
+    ? { text: quotesData[0].quote, author: quotesData[0].author }
+    : homeData?.quote;
 
   return (
     <section id="ecosystem" className="w-full bg-zinc-950 py-24">
@@ -49,7 +53,7 @@ export function BentoGrid() {
 
           {/* Quote */}
           <div className="min-h-[240px]">
-            <QuoteCard data={homeData?.quote} isLoading={isHomeLoading} />
+            <QuoteCard data={activeQuote} isLoading={isHomeLoading} />
           </div>
 
           {/* Steam */}

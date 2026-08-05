@@ -6,10 +6,11 @@ import useSWR from "swr";
 import { fetchSkyDreamsAPI, ProjectResponse } from "@/services/api";
 import Link from "next/link";
 import { useLanguage } from "@/context/language-context";
+import { MatrixText } from "@/components/ui/matrix-text";
 
 export function FeaturedProjects() {
   const { t } = useLanguage();
-  const { data, isLoading } = useSWR<ProjectResponse[]>("/projects", fetchSkyDreamsAPI, {
+  const { data, isLoading } = useSWR<ProjectResponse[]>("/personal-hub/projects", fetchSkyDreamsAPI, {
     refreshInterval: 60000,
   });
 
@@ -42,19 +43,24 @@ export function FeaturedProjects() {
         {/* 3-Column Horizontal Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {isLoading ? (
-            // Skeletons
+            // Matrix loading cards
             Array.from({ length: 3 }).map((_, idx) => (
-              <div key={idx} className="flex h-56 flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+              <div key={idx} className="flex h-56 flex-col justify-between rounded-2xl border border-emerald-900/30 bg-zinc-900/50 p-6">
                 <div>
-                  <div className="mb-4 h-6 w-6 rounded-full bg-zinc-800 animate-pulse"></div>
-                  <div className="mb-2 h-6 w-3/4 rounded bg-zinc-800 animate-pulse"></div>
-                  <div className="h-4 w-full rounded bg-zinc-800 animate-pulse"></div>
-                  <div className="mt-2 h-4 w-2/3 rounded bg-zinc-800 animate-pulse"></div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <GithubIcon className="h-6 w-6 text-emerald-700/50" />
+                  </div>
+                  <div className="mb-2 font-mono text-base font-bold">
+                    <MatrixText infinite placeholderLength={18} scrambleSpeed={40 + idx * 15} className="text-emerald-500/50" />
+                  </div>
+                  <div className="mt-2 font-mono text-xs leading-relaxed">
+                    <MatrixText infinite placeholderLength={42} scrambleSpeed={60 + idx * 10} className="text-emerald-500/25" />
+                  </div>
                 </div>
               </div>
             ))
           ) : projects.length > 0 ? (
-            projects.map((project) => (
+            projects.map((project, i) => (
               <a
                 key={project.id}
                 href={project.url}
@@ -68,7 +74,7 @@ export function FeaturedProjects() {
                     <ArrowUpRight size={20} className="opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
                   <h3 className="mb-2 font-heading text-xl font-bold text-zinc-50 group-hover:text-emerald-500 transition-colors">
-                    {project.title}
+                    <MatrixText text={project.title} scrambleSpeed={25} decodeDelay={i * 100} className="font-heading" once />
                   </h3>
                   <p className="text-sm leading-relaxed text-zinc-400 line-clamp-3">
                     {project.description}
@@ -88,7 +94,12 @@ export function FeaturedProjects() {
               </a>
             ))
           ) : (
-            <p className="col-span-3 text-center text-sm text-zinc-500">{t.projects.empty}</p>
+            <div className="col-span-3 flex flex-col items-center justify-center py-12">
+              <p className="font-mono text-sm">
+                <MatrixText infinite placeholderLength={28} scrambleSpeed={60} className="text-emerald-500/40" />
+              </p>
+              <p className="mt-2 text-xs text-zinc-600">{t.projects.empty}</p>
+            </div>
           )}
         </div>
 

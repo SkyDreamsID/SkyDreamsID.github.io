@@ -1,18 +1,19 @@
 "use client";
 
 import useSWR from "swr";
-import { fetchSkyDreamsAPI, ProfileResponse } from "@/services/api";
+import { fetchSkyDreamsAPI } from "@/services/api";
 import { useLanguage } from "@/context/language-context";
+import { MatrixBlock } from "@/components/ui/matrix-text";
 
 export function About() {
-  const { data, isLoading } = useSWR<ProfileResponse>("/profile", fetchSkyDreamsAPI, {
+  const { data, isLoading } = useSWR<any>("/personal-hub/profile", fetchSkyDreamsAPI, {
     refreshInterval: 60000,
   });
   const { language, t } = useLanguage();
 
   const bioText = language === "en" 
-    ? (data?.profile?.bio_en || data?.profile?.bio_id) 
-    : data?.profile?.bio_id;
+    ? (data?.bio_en || data?.bio_id || data?.profile?.bio_en || data?.profile?.bio_id) 
+    : (data?.bio_id || data?.profile?.bio_id);
 
   return (
     <section id="about" className="w-full border-t border-zinc-800 bg-zinc-950/50 py-24">
@@ -25,21 +26,14 @@ export function About() {
           </h2>
         </div>
 
-        {/* Storytelling Paragraphs */}
+        {/* Bio — Matrix scramble saat loading/kosong, decode saat data ada */}
         <div className="space-y-6 text-base leading-relaxed text-zinc-400">
-          {isLoading ? (
-            <div className="space-y-4">
-              <span className="inline-block h-4 w-full animate-pulse rounded bg-zinc-800"></span>
-              <span className="inline-block h-4 w-11/12 animate-pulse rounded bg-zinc-800"></span>
-              <span className="inline-block h-4 w-3/4 animate-pulse rounded bg-zinc-800"></span>
-            </div>
-          ) : bioText ? (
-            bioText.split("\n").map((paragraph: string, idx: number) => (
-              paragraph.trim() ? <p key={idx}>{paragraph}</p> : <br key={idx} />
-            ))
-          ) : (
-            <p>{t.about.empty}</p>
-          )}
+          <MatrixBlock
+            text={bioText}
+            isLoading={isLoading}
+            placeholderLines={3}
+            paragraphClassName="text-zinc-400"
+          />
         </div>
 
       </div>

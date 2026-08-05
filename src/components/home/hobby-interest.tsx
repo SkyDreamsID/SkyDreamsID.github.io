@@ -1,9 +1,11 @@
 "use client";
 
+import React from "react";
 import { Terminal, Cpu, Camera, Train, Wrench, Laptop, Code, Music, Heart, Box } from "lucide-react";
 import useSWR from "swr";
 import { fetchSkyDreamsAPI } from "@/services/api";
 import { useLanguage } from "@/context/language-context";
+import { MatrixText } from "@/components/ui/matrix-text";
 
 const iconMap: Record<string, React.ReactNode> = {
   laptop: <Laptop size={22} />,
@@ -26,9 +28,25 @@ interface HobbyCategory {
 
 export function HobbyInterest() {
   const { t } = useLanguage();
-  const { data, isLoading } = useSWR<HobbyCategory[]>("/hobbies", fetchSkyDreamsAPI, {
-    refreshInterval: 60000,
-  });
+  const { data: rawArsenal, isLoading: isArsenalLoading } = useSWR<any[]>("/personal-hub/arsenal", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: legacyHobbies, isLoading: isLegacyLoading } = useSWR<HobbyCategory[]>("/hobbies", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+
+  const isLoading = isArsenalLoading && isLegacyLoading;
+
+  let categories: HobbyCategory[] = [];
+  if (rawArsenal && Array.isArray(rawArsenal) && rawArsenal.length > 0 && rawArsenal[0].category && rawArsenal[0].name) {
+    const map = new Map<string, { title: string; icon: string; items: string[] }>();
+    rawArsenal.forEach((item) => {
+      const cat = item.category || "General";
+      if (!map.has(cat)) {
+        map.set(cat, { title: cat, icon: item.icon || "default", items: [] });
+      }
+      map.get(cat)!.items.push(item.name);
+    });
+    categories = Array.from(map.values());
+  } else if (legacyHobbies && Array.isArray(legacyHobbies)) {
+    categories = legacyHobbies;
+  }
 
   return (
     <section id="interests" className="w-full border-t border-zinc-800 bg-zinc-950/30 py-24">
@@ -47,12 +65,26 @@ export function HobbyInterest() {
         {/* 2x2 Bento Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:max-w-4xl lg:mx-auto">
           {isLoading ? (
-            // Skeleton Loader
+            // Matrix loading cards
             Array.from({ length: 4 }).map((_, idx) => (
-              <div key={idx} className="flex flex-col justify-center rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 h-32 animate-pulse"></div>
+              <div key={idx} className="flex flex-col justify-center rounded-xl border border-emerald-900/30 bg-zinc-900/50 p-6 min-h-[130px]">
+                <div className="mb-4 flex items-center gap-3">
+                  <Cpu size={22} className="text-emerald-700/40" />
+                  <span className="font-mono text-sm font-bold">
+                    <MatrixText infinite placeholderLength={12} scrambleSpeed={35 + idx * 12} className="text-emerald-500/50" />
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from({ length: 4 }).map((__, i) => (
+                    <span key={i} className="inline-flex items-center rounded-md bg-zinc-800/40 px-2.5 py-1 font-mono text-xs">
+                      <MatrixText infinite placeholderLength={6 + i} scrambleSpeed={50 + i * 8} className="text-emerald-500/30" />
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))
-          ) : data && data.length > 0 ? (
-            data.map((category, idx) => {
+          ) : categories && categories.length > 0 ? (
+            categories.map((category, idx) => {
               const icon = iconMap[category.icon] || iconMap.default;
 
               return (

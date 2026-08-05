@@ -6,6 +6,7 @@ import { ArrowRight, MapPin, Target, Radio, Clock, Zap } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-icons";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { MatrixText } from "@/components/ui/matrix-text";
 
 
 import { useLanguage } from "@/context/language-context";
@@ -126,62 +127,12 @@ function MarqueeText({ text, className }: { text: string; className?: string }) 
   );
 }
 
-function randomChar() {
-  const chars = "!@#$%^&*()_+[]{}:;<>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return chars.charAt(Math.floor(Math.random() * chars.length));
-}
-
-function MatrixText({ text, delayMs = 0, speedMs = 15 }: { text: string; delayMs?: number; speedMs?: number }) {
-  const [displayedText, setDisplayedText] = useState("");
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setStarted(true);
-      setDisplayedText(text.split("").map((c) => (c === " " ? " " : randomChar())).join(""));
-    }, delayMs);
-    return () => clearTimeout(timeout);
-  }, [delayMs, text]);
-
-  useEffect(() => {
-    if (!started) return;
-    
-    let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (currentIndex >= text.length) {
-        clearInterval(interval);
-        setDisplayedText(text);
-        return;
-      }
-      
-      setDisplayedText((prev) => {
-        const chars = prev.split("");
-        chars[currentIndex] = text[currentIndex];
-        
-        for (let i = currentIndex + 1; i < chars.length; i++) {
-          if (text[i] !== " ") {
-            chars[i] = randomChar();
-          } else {
-            chars[i] = " ";
-          }
-        }
-        return chars.join("");
-      });
-      currentIndex++;
-    }, speedMs);
-    
-    return () => clearInterval(interval);
-  }, [started, text, speedMs]);
-
-  if (!started) return null;
-  return <div className="min-h-[1.5em] w-full">{displayedText}</div>;
-}
-
 export function Hero() {
   const { language, t } = useLanguage();
   const { data: homeData, isLoading: isHomeLoading, error: homeError } = useSWR<HomeResponse>("/home", fetchSkyDreamsAPI, { refreshInterval: 60000 });
   const { data: lastfmData, isLoading: isLastfmLoading, error: lastfmError } = useSWR<LastfmResponse>("/lastfm", fetchSkyDreamsAPI, { refreshInterval: 60000 });
-  const { data: profileData, isLoading: isProfileLoading } = useSWR<any>("/profile", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: profileData, isLoading: isProfileLoading } = useSWR<any>("/personal-hub/profile", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: statusData } = useSWR<any>("/general/status", fetchSkyDreamsAPI, { refreshInterval: 30000 });
 
 
 
@@ -232,7 +183,7 @@ export function Hero() {
     return () => clearInterval(timer);
   }, []);
 
-  const heroName = isProfileLoading ? "..." : (profileData?.profile?.hero_name || "Rifki Eka Putra");
+  const heroName = isProfileLoading ? "..." : (profileData?.hero_name || profileData?.profile?.hero_name || "Rifki Eka Putra");
 
   return (
     <section id="home" className="relative flex min-h-[calc(100vh-4rem)] w-full items-center justify-center pt-16">
@@ -247,7 +198,16 @@ export function Hero() {
             className="font-heading text-4xl font-bold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
           >
             <span className="block">{t.hero.greeting}</span>
-            <span className="block text-emerald-500">{heroName}</span>
+            <span className="block text-emerald-500 whitespace-nowrap">
+              <MatrixText
+                text={profileData?.hero_name || profileData?.profile?.hero_name || (isProfileLoading ? null : "Rifki Eka Putra")}
+                scrambleSpeed={30}
+                decodeDelay={300}
+                placeholderLength={15}
+                className="text-emerald-500 whitespace-nowrap"
+                once
+              />
+            </span>
           </motion.h1>
           
           <motion.div 
@@ -260,8 +220,8 @@ export function Hero() {
             <RotatingText 
               items={(
                 (language === "en" 
-                  ? (profileData?.profile?.hero_tagline_en || profileData?.profile?.hero_tagline)
-                  : profileData?.profile?.hero_tagline) || 
+                  ? (profileData?.hero_tagline_en || profileData?.hero_tagline || profileData?.profile?.hero_tagline_en || profileData?.profile?.hero_tagline)
+                  : (profileData?.hero_tagline || profileData?.profile?.hero_tagline)) || 
                 "Mahasiswa Rekayasa Elektronika | Fotografer & Railfan Enthusiast"
               )
                 .split("|")
@@ -345,8 +305,8 @@ export function Hero() {
                   {/* Phase 3 */}
                   {pipboyPhase >= 3 && (
                     <>
-                      <MatrixText text="> MOUNTING CORE MODULES... [OK]" delayMs={0} speedMs={12} />
-                      <MatrixText text="> CHECKING PIP-BOY STATUS... 100 HP" delayMs={300} speedMs={10} />
+                      <MatrixText text="> MOUNTING CORE MODULES... [OK]" decodeDelay={0} scrambleSpeed={12} once />
+                      <MatrixText text="> CHECKING PIP-BOY STATUS... 100 HP" decodeDelay={300} scrambleSpeed={10} once />
                     </>
                   )}
 
