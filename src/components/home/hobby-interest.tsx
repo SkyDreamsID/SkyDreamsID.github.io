@@ -28,25 +28,45 @@ interface HobbyCategory {
 
 export function HobbyInterest() {
   const { t } = useLanguage();
-  const { data: rawArsenal, isLoading: isArsenalLoading } = useSWR<any[]>("/personal-hub/arsenal", fetchSkyDreamsAPI, { refreshInterval: 60000 });
-  const { data: legacyHobbies, isLoading: isLegacyLoading } = useSWR<HobbyCategory[]>("/hobbies", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: arsenalRes, isLoading: isArsenalLoading } = useSWR<any>("/personal-hub/arsenal", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: generalArsenalRes, isLoading: isGeneralLoading } = useSWR<any>("/general/arsenal", fetchSkyDreamsAPI, { refreshInterval: 60000 });
+  const { data: legacyHobbies, isLoading: isLegacyLoading } = useSWR<any>("/hobbies", fetchSkyDreamsAPI, { refreshInterval: 60000 });
 
-  const isLoading = isArsenalLoading && isLegacyLoading;
+  const isLoading = (isArsenalLoading && isGeneralLoading && isLegacyLoading) || (!arsenalRes && !generalArsenalRes && !legacyHobbies);
+
+  // Ekstrak array dari response
+  const rawArsenal: any[] = Array.isArray(arsenalRes)
+    ? arsenalRes
+    : Array.isArray(arsenalRes?.data)
+    ? arsenalRes.data
+    : Array.isArray(generalArsenalRes)
+    ? generalArsenalRes
+    : Array.isArray(generalArsenalRes?.data)
+    ? generalArsenalRes.data
+    : [];
+
+  const legacyList: HobbyCategory[] = Array.isArray(legacyHobbies)
+    ? legacyHobbies
+    : Array.isArray(legacyHobbies?.data)
+    ? legacyHobbies.data
+    : [];
 
   let categories: HobbyCategory[] = [];
-  if (rawArsenal && Array.isArray(rawArsenal) && rawArsenal.length > 0 && rawArsenal[0].category && rawArsenal[0].name) {
+  if (rawArsenal.length > 0) {
     const map = new Map<string, { title: string; icon: string; items: string[] }>();
     rawArsenal.forEach((item) => {
       const cat = item.category || "General";
       if (!map.has(cat)) {
         map.set(cat, { title: cat, icon: item.icon || "default", items: [] });
       }
-      map.get(cat)!.items.push(item.name);
+      if (item.name) map.get(cat)!.items.push(item.name);
     });
     categories = Array.from(map.values());
-  } else if (legacyHobbies && Array.isArray(legacyHobbies)) {
-    categories = legacyHobbies;
+  } else if (legacyList.length > 0) {
+    categories = legacyList;
   }
+
+  const showMatrix = isLoading || categories.length === 0;
 
   return (
     <section id="interests" className="w-full border-t border-zinc-800 bg-zinc-950/30 py-24">
@@ -64,7 +84,7 @@ export function HobbyInterest() {
 
         {/* 2x2 Bento Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:max-w-4xl lg:mx-auto">
-          {isLoading ? (
+          {showMatrix ? (
             // Matrix loading cards
             Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="flex flex-col justify-center rounded-xl border border-emerald-900/30 bg-zinc-900/50 p-6 min-h-[130px]">
@@ -83,7 +103,7 @@ export function HobbyInterest() {
                 </div>
               </div>
             ))
-          ) : categories && categories.length > 0 ? (
+          ) : (
             categories.map((category, idx) => {
               const icon = iconMap[category.icon] || iconMap.default;
 
@@ -112,8 +132,6 @@ export function HobbyInterest() {
                 </div>
               );
             })
-          ) : (
-            <p className="col-span-2 text-center text-sm text-zinc-500">{t.interests.empty}</p>
           )}
         </div>
       </div>

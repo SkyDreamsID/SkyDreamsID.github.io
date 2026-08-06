@@ -177,48 +177,123 @@ body::before {
 }
 
 @layer utilities {
+  /* ─── Pip-Boy Screen Pulse ────────────── */
   @keyframes pipboy-pulse {
     0%, 100% {
-      box-shadow: inset 0px 0px 15px rgba(0, 255, 102, 0.05), 0px 0px 10px rgba(0, 255, 102, 0.1);
+      box-shadow:
+        inset 0px 0px 15px rgba(0, 255, 102, 0.05),
+        0px 0px 12px rgba(0, 255, 102, 0.15),
+        0px 0px 30px rgba(0, 255, 102, 0.06);
     }
     50% {
-      box-shadow: inset 0px 0px 50px rgba(0, 255, 102, 0.4), 0px 0px 40px rgba(0, 255, 102, 0.6);
+      box-shadow:
+        inset 0px 0px 40px rgba(0, 255, 102, 0.35),
+        0px 0px 45px rgba(0, 255, 102, 0.55),
+        0px 0px 80px rgba(0, 255, 102, 0.12);
     }
   }
 
   .animate-pipboy {
-    animation: pipboy-pulse 3s ease-in-out infinite;
-    transition: all 0.3s ease;
+    animation: pipboy-pulse 3.5s ease-in-out infinite;
+    transition: all 0.4s ease;
   }
 
   .animate-pipboy:hover {
-    animation: none;
-    transform: scale(1.02);
-    box-shadow: inset 0px 0px 40px rgba(0, 255, 102, 0.3), 0px 0px 30px rgba(0, 255, 102, 0.5);
+    animation: pipboy-pulse 1.2s ease-in-out infinite;
+    transform: scale(1.015);
+    box-shadow:
+      inset 0px 0px 50px rgba(0, 255, 102, 0.4),
+      0px 0px 60px rgba(0, 255, 102, 0.6),
+      0px 0px 100px rgba(0, 255, 102, 0.15);
   }
 
-  @keyframes crt-text-float {
-    0%, 100% { transform: translate3d(0, 0, 0); text-shadow: 0 0 5px rgba(0, 255, 102, 0.7); }
-    25% { transform: translate3d(0.8px, -0.6px, 0); text-shadow: 0 0 8px rgba(0, 255, 102, 0.9); }
-    50% { transform: translate3d(-0.6px, 0.8px, 0); text-shadow: 0 0 4px rgba(0, 255, 102, 0.5); }
-    75% { transform: translate3d(0.5px, 0.5px, 0); text-shadow: 0 0 7px rgba(0, 255, 102, 0.95); }
-  }
-  
-  @keyframes crt-text-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
-  }
-
-  .animate-crt-text {
-    animation: crt-text-float 5s ease-in-out infinite, crt-text-pulse 3s ease-in-out infinite;
-  }
-
+  /* ─── Scanline Crawl ─────────────────── */
   @keyframes scanlines-move {
     0% { background-position: 0 0; }
     100% { background-position: 0 4px; }
   }
 
   .animate-scanlines {
-    animation: scanlines-move 1.5s linear infinite;
+    animation: scanlines-move 0.8s steps(1) infinite;
+  }
+
+  /* ─── CRT Text Flicker ───────────────── */
+  @keyframes crt-text-float {
+    0%, 100% { transform: translate3d(0, 0, 0); text-shadow: 0 0 6px rgba(0, 255, 102, 0.8); }
+    20% { transform: translate3d(0.5px, -0.3px, 0); text-shadow: 0 0 10px rgba(0, 255, 102, 1); }
+    40% { transform: translate3d(-0.3px, 0.5px, 0); text-shadow: 0 0 4px rgba(0, 255, 102, 0.5); }
+    60% { transform: translate3d(0.3px, 0.3px, 0); text-shadow: 0 0 8px rgba(0, 255, 102, 0.9); }
+    80% { transform: translate3d(-0.4px, -0.2px, 0); text-shadow: 0 0 5px rgba(0, 255, 102, 0.6); }
+  }
+
+  @keyframes crt-text-pulse {
+    0%, 100% { opacity: 1; }
+    48% { opacity: 0.95; }
+    50% { opacity: 0.7; }
+    52% { opacity: 0.95; }
+  }
+
+  .animate-crt-text {
+    animation:
+      crt-text-float 6s ease-in-out infinite,
+      crt-text-pulse 4s ease-in-out infinite;
+  }
+
+  /* ─── Horizontal Glitch Stripe ───────── */
+  @keyframes glitch-stripe {
+    0%, 90%, 100% { opacity: 0; transform: translateY(0); }
+    92% { opacity: 0.12; transform: translateY(-2px); }
+    94% { opacity: 0.08; transform: translateY(3px); }
+    96% { opacity: 0.15; transform: translateY(-1px); }
+    98% { opacity: 0; }
+  }
+
+  .animate-glitch-stripe {
+    animation: glitch-stripe 8s ease-in-out infinite;
+  }
+
+  /* ─── Power-On Flash ─────────────────── */
+  @keyframes power-on {
+    0% { opacity: 0; filter: brightness(5) blur(4px); }
+    10% { opacity: 1; filter: brightness(3) blur(1px); }
+    20% { opacity: 0.3; filter: brightness(0.5); }
+    30% { opacity: 1; filter: brightness(2); }
+    40% { opacity: 0.6; }
+    60% { opacity: 1; filter: brightness(1.2); }
+    100% { opacity: 1; filter: brightness(1); }
+  }
+
+  .animate-power-on {
+    animation: power-on 0.8s ease-out forwards;
+  }
+
+  /* ─── Corner Bracket Blink ───────────── */
+  @keyframes bracket-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .animate-bracket {
+    animation: bracket-blink 2s ease-in-out infinite;
+  }
+
+  /* ─── Data Bar Fill ──────────────────── */
+  @keyframes data-fill {
+    from { width: 0%; }
+    to { width: var(--bar-w, 100%); }
+  }
+
+  .animate-data-bar {
+    animation: data-fill 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* ─── Cursor Blink ───────────────────── */
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .animate-cursor {
+    animation: cursor-blink 0.9s step-end infinite;
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-icons";
+import { SocialIcons } from "@/components/ui/social-icons";
 
 export function Footer() {
   return (
@@ -13,18 +13,9 @@ export function Footer() {
 
         {/* Social & Version */}
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4 text-zinc-400">
-            <a href="https://github.com/skydreamsid" target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition-colors">
-              <GithubIcon className="h-[18px] w-[18px]" />
-            </a>
-            <a href="https://linkedin.com/in/rifkiekaputra" target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition-colors">
-              <LinkedinIcon className="h-[18px] w-[18px]" />
-            </a>
-            <a href="https://instagram.com/skydreamsid" target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition-colors">
-              <InstagramIcon className="h-[18px] w-[18px]" />
-            </a>
-          </div>
-          
+          {/* Social Icons — dari API /general/socials */}
+          <SocialIcons iconClass="h-[18px] w-[18px]" />
+
           <div className="rounded border border-zinc-800 bg-zinc-900 px-2 py-1 font-mono text-[10px] text-zinc-500">
             v1.0.0
           </div>

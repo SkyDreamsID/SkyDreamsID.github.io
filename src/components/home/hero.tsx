@@ -4,8 +4,9 @@ import useSWR from "swr";
 import { fetchSkyDreamsAPI, HomeResponse, LastfmResponse } from "@/services/api";
 import { ArrowRight, MapPin, Target, Radio, Clock, Zap } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "@/components/ui/brand-icons";
+import { SocialIcons } from "@/components/ui/social-icons";
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MatrixText } from "@/components/ui/matrix-text";
 
 
@@ -101,10 +102,10 @@ function MarqueeText({ text, className }: { text: string; className?: string }) 
   }, [text]);
 
   return (
-    <div ref={containerRef} className={`relative flex w-full overflow-hidden whitespace-nowrap ${className}`}>
+    <div ref={containerRef} className="relative flex-1 overflow-hidden">
       <motion.div
         ref={textRef}
-        className="inline-block"
+        className={`inline-block whitespace-nowrap ${className}`}
         animate={
           overflow > 0
             ? { x: [0, 0, -overflow, -overflow, 0] }
@@ -136,15 +137,15 @@ export function Hero() {
 
 
 
-  // Pip-Boy Card 5-Phase Animation State
+  // Pip-Boy Card 5-Phase Animation State (Smoothed Delays)
   const [pipboyPhase, setPipboyPhase] = useState(1);
 
   useEffect(() => {
-    // Phase 1 (0-300ms): Card Fade In & blank screen
-    const t2 = setTimeout(() => setPipboyPhase(2), 300);   // Phase 2: INITIALIZING PIP-BOY...
-    const t3 = setTimeout(() => setPipboyPhase(3), 800);   // Phase 3: Matrix Decryption
-    const t4 = setTimeout(() => setPipboyPhase(4), 1800);  // Phase 4: Connected ke skydreamsid-api-core... [OK]
-    const t5 = setTimeout(() => setPipboyPhase(5), 2600);  // Phase 5: Success & Live Status UI
+    // Phase 1 (0-400ms): Card Fade In & blank power-on cursor
+    const t2 = setTimeout(() => setPipboyPhase(2), 400);   // Phase 2: INITIALIZING PIP-BOY...
+    const t3 = setTimeout(() => setPipboyPhase(3), 1100);  // Phase 3: Core Modules & Vault Firmware
+    const t4 = setTimeout(() => setPipboyPhase(4), 2400);  // Phase 4: Connected + Animated Boot Progress Bar
+    const t5 = setTimeout(() => setPipboyPhase(5), 3800);  // Phase 5: Smooth Crossfade to Live Status UI
 
     return () => {
       clearTimeout(t2);
@@ -253,22 +254,14 @@ export function Hero() {
             </a>
           </motion.div>
 
-          {/* Social Icons */}
+          {/* Social Icons — dari API /general/socials */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-8 flex items-center gap-5 text-zinc-400"
+            className="mt-8"
           >
-            <a href="https://github.com/SkyDreamsID" target="_blank" rel="noreferrer" className="transition-colors hover:text-emerald-500">
-              <GithubIcon className="h-5 w-5" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="transition-colors hover:text-emerald-500">
-              <LinkedinIcon className="h-5 w-5" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="transition-colors hover:text-emerald-500">
-              <InstagramIcon className="h-5 w-5" />
-            </a>
+            <SocialIcons />
           </motion.div>
         </div>
 
@@ -279,103 +272,191 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             onClick={handleSkipPipboy}
-            className="animate-pipboy relative w-full max-w-[420px] rounded-2xl border-2 border-[#00FF66]/80 bg-zinc-950/90 p-5 shadow-[0_0_25px_rgba(0,255,102,0.2)] backdrop-blur-md transition-all min-h-[300px] cursor-pointer overflow-hidden"
+            className="animate-pipboy relative w-full max-w-[420px] rounded-2xl border-2 border-[#00FF66]/80 bg-zinc-950/90 p-5 shadow-[0_0_25px_rgba(0,255,102,0.2)] backdrop-blur-md transition-all min-h-[300px] cursor-pointer overflow-hidden select-none"
           >
             {/* Scanline overlay */}
             <div 
               className="animate-scanlines pointer-events-none absolute inset-0 z-10 opacity-60 mix-blend-overlay rounded-2xl"
               style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)" }}
             />
-            
+
+            {/* Horizontal glitch stripe */}
+            <div 
+              className="animate-glitch-stripe pointer-events-none absolute inset-x-0 z-10 h-8 bg-[#00FF66]/10"
+              style={{ top: "40%" }}
+            />
+
+            {/* Corner decorations */}
+            <div className="pointer-events-none absolute inset-0 z-20">
+              <span className="animate-bracket absolute left-2 top-2 font-mono text-[#00FF66]/50 text-xs leading-none">┌─</span>
+              <span className="animate-bracket absolute right-2 top-2 font-mono text-[#00FF66]/50 text-xs leading-none">─┐</span>
+              <span className="animate-bracket absolute left-2 bottom-2 font-mono text-[#00FF66]/50 text-xs leading-none">└─</span>
+              <span className="animate-bracket absolute right-2 bottom-2 font-mono text-[#00FF66]/50 text-xs leading-none">─┘</span>
+            </div>
+
             <div className="animate-crt-text relative z-20 flex flex-col font-['Monofonto'] text-[13px] leading-relaxed text-[#00FF66] [text-shadow:0_0_5px_rgba(0,255,102,0.7)] sm:text-[14px] h-full justify-between">
               
-              {/* Phase 1: Card Fade In / Blank */}
-              {pipboyPhase === 1 && (
-                <div className="flex h-full min-h-[260px] items-start pt-2">
-                  <span className="animate-pulse opacity-50 block">_</span>
-                </div>
-              )}
+              <AnimatePresence mode="wait">
+                {/* Phase 1-4: Booting & Matrix Decryption Sequence */}
+                {pipboyPhase < 5 ? (
+                  <motion.div
+                    key="booting-sequence"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, scale: 0.98, filter: "blur(4px)" }}
+                    transition={{ duration: 0.3 }}
+                    className="min-h-[260px] flex flex-col justify-between py-1 font-mono uppercase"
+                  >
+                    <div className="space-y-3">
+                      {/* Phase 1 */}
+                      {pipboyPhase === 1 && (
+                        <div className="animate-power-on flex items-center pt-1">
+                          <span className="animate-cursor opacity-70 text-base">█</span>
+                        </div>
+                      )}
 
-              {/* Phase 2, 3, 4: Booting & Matrix Decryption */}
-              {(pipboyPhase >= 2 && pipboyPhase <= 4) && (
-                <div className="space-y-1.5 min-h-[260px] flex flex-col pt-2 uppercase font-mono">
-                  {/* Phase 2 */}
-                  <div>&gt; INITIALIZING PIP-BOY...</div>
+                      {/* Phase 2 */}
+                      {pipboyPhase >= 2 && (
+                        <div className="flex items-center gap-2">
+                          <span>&gt; INITIALIZING PIP-BOY...</span>
+                          {pipboyPhase === 2 && <span className="animate-cursor opacity-80">█</span>}
+                        </div>
+                      )}
 
-                  {/* Phase 3 */}
-                  {pipboyPhase >= 3 && (
-                    <>
-                      <MatrixText text="> MOUNTING CORE MODULES... [OK]" decodeDelay={0} scrambleSpeed={12} once />
-                      <MatrixText text="> CHECKING PIP-BOY STATUS... 100 HP" decodeDelay={300} scrambleSpeed={10} once />
-                    </>
-                  )}
+                      {/* Phase 3 */}
+                      {pipboyPhase >= 3 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 2 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-2"
+                        >
+                          <div className="block">
+                            <MatrixText text="> MOUNTING CORE MODULES... [OK]" decodeDelay={0} scrambleSpeed={10} once />
+                          </div>
+                          <div className="block">
+                            <MatrixText text="> CHECKING PIP-BOY STATUS... [100 HP]" decodeDelay={200} scrambleSpeed={8} once />
+                          </div>
+                        </motion.div>
+                      )}
 
-                  {/* Phase 4 */}
-                  {pipboyPhase >= 4 && (
-                    <div className="text-emerald-400 font-bold pt-1">
-                      &gt; Connected ke skydreamsid-api-core... [OK]
+                      {/* Phase 4: Connection & Progress */}
+                      {pipboyPhase >= 4 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 2 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="space-y-2 pt-1"
+                        >
+                          <div className="text-emerald-400 font-bold block">
+                            &gt; CONNECTED: SKYDREAMSID-API-CORE <span className="text-emerald-300">[OK]</span>
+                          </div>
+                          {/* Animated boot progress bar */}
+                          <div className="mt-3 flex items-center gap-2 text-xs">
+                            <span className="opacity-60">BOOT</span>
+                            <div className="flex-1 h-2 rounded-full bg-[#00FF66]/20 overflow-hidden p-0.5">
+                              <div
+                                className="animate-data-bar h-full rounded-full bg-[#00FF66] shadow-[0_0_8px_#00FF66]"
+                                style={{ "--bar-w": "100%" } as React.CSSProperties}
+                              />
+                            </div>
+                            <span className="opacity-60 font-bold">100%</span>
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
-                  )}
 
-                  <span className="animate-pulse opacity-50 block mt-2">_</span>
-                </div>
-              )}
+                    <div className="pt-2">
+                      <span className="animate-cursor text-[#00FF66]/60">_</span>
+                    </div>
+                  </motion.div>
+                ) : (
+                  /* Phase 5: Success - Live Status UI (Staggered Reveal) */
+                  <motion.div
+                    key="live-status"
+                    initial={{ opacity: 0, scale: 1.02, filter: "brightness(2)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "brightness(1)" }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    {/* Header (Original Layout) */}
+                    <motion.div 
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.05 }}
+                      className="mb-4 flex items-center gap-2 border-b-2 border-[#00FF66]/40 pb-2"
+                    >
+                      <Zap size={15} className="text-[#00FF66]" />
+                      <span className="font-bold tracking-widest text-[16px]">LIVE STATUS</span>
+                      <span className="animate-cursor text-[16px]">█</span>
+                    </motion.div>
 
-              {/* Phase 5: Success - Live Status UI */}
-              {pipboyPhase === 5 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Header */}
-                  <div className="mb-4 flex items-center gap-2 border-b-2 border-[#00FF66]/40 pb-2">
-                    <Zap size={15} className="text-[#00FF66]" />
-                    <span className="font-bold tracking-widest text-[16px]">LIVE STATUS</span>
-                    <span className="animate-pulse text-[16px]">█</span>
-                  </div>
+                    {/* Data Rows (Original Layout, Smooth Staggered Slide In) */}
+                    <div className="space-y-3">
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.35, delay: 0.15 }}
+                        className="flex items-start gap-2.5 w-full"
+                      >
+                        <MapPin size={15} className="shrink-0 mt-0.5 opacity-80" />
+                        <span className="w-24 shrink-0 opacity-80 tracking-wider">LOCATION</span>
+                        <span className="uppercase">: {(isProfileLoading || isHomeLoading) ? "..." : (profileData?.profile?.location || homeData?.status?.location || "Madiun, Indonesia")}</span>
+                      </motion.div>
+                        
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.35, delay: 0.25 }}
+                        className="flex items-start gap-2.5 w-full"
+                      >
+                        <Target size={15} className="shrink-0 mt-0.5 opacity-80" />
+                        <span className="w-24 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
+                        <span className="uppercase line-clamp-1">: {isHomeLoading ? "..." : (homeData?.status?.activity || "PLC & System Automation")}</span>
+                      </motion.div>
+                        
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.35, delay: 0.35 }}
+                        className="flex items-start gap-2.5 w-full"
+                      >
+                        <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
+                        <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
+                        <div className="flex flex-1 min-w-0">
+                          <span className="whitespace-pre">: </span>
+                          <MarqueeText 
+                            text={isLastfmLoading ? "..." : (lastfmData?.nowPlaying ? `${lastfmData.nowPlaying.artist} - ${lastfmData.nowPlaying.title}` : "OFFLINE")} 
+                            className="uppercase" 
+                          />
+                        </div>
+                      </motion.div>
+                        
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.35, delay: 0.45 }}
+                        className="flex items-start gap-2.5 w-full"
+                      >
+                        <Clock size={15} className="shrink-0 mt-0.5 opacity-80" />
+                        <span className="w-24 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
+                        <span className="uppercase">: {time || "00:00:00 WIB"}</span>
+                      </motion.div>
+                    </div>
 
-                  {/* Data Rows */}
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2.5 w-full">
-                      <MapPin size={15} className="shrink-0 mt-0.5 opacity-80" />
-                      <span className="w-24 shrink-0 opacity-80 tracking-wider">LOCATION</span>
-                      <span className="uppercase">: {(isProfileLoading || isHomeLoading) ? "..." : (profileData?.profile?.location || homeData?.status?.location || "Madiun, Indonesia")}</span>
-                    </div>
-                      
-                    <div className="flex items-start gap-2.5 w-full">
-                      <Target size={15} className="shrink-0 mt-0.5 opacity-80" />
-                      <span className="w-24 shrink-0 opacity-80 tracking-wider">FOCUSING</span>
-                      <span className="uppercase line-clamp-1">: {isHomeLoading ? "..." : (homeData?.status?.activity || "PLC & System Automation")}</span>
-                    </div>
-                      
-                    <div className="flex items-start gap-2.5 w-full">
-                      <Radio size={15} className="shrink-0 mt-0.5 opacity-80" />
-                      <span className="w-24 shrink-0 opacity-80 tracking-wider">RAD-WAVE</span>
-                      <div className="flex flex-1 min-w-0">
-                        <span className="whitespace-pre">: </span>
-                        <MarqueeText 
-                          text={isLastfmLoading ? "..." : (lastfmData?.nowPlaying ? `${lastfmData.nowPlaying.artist} - ${lastfmData.nowPlaying.title}` : "OFFLINE")} 
-                          className="uppercase" 
-                        />
-                      </div>
-                    </div>
-                      
-                    <div className="flex items-start gap-2.5 w-full">
-                      <Clock size={15} className="shrink-0 mt-0.5 opacity-80" />
-                      <span className="w-24 shrink-0 opacity-80 tracking-wider">SYS-TIME</span>
-                      <span className="uppercase">: {time || "00:00:00 WIB"}</span>
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="mt-6 border-t-2 border-[#00FF66]/40 pt-3 text-center">
-                    <span className={`tracking-widest ${systemState.includes("CRITICAL") ? "text-red-500 animate-pulse" : ""}`}>
-                      SYSTEM STATE: {systemState}
-                    </span>
-                  </div>
-                </motion.div>
-              )}
+                    {/* Footer (Original Layout) */}
+                    <motion.div 
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: 0.55 }}
+                      className="mt-6 border-t-2 border-[#00FF66]/40 pt-3 text-center"
+                    >
+                      <span className={`tracking-widest ${systemState.includes("CRITICAL") ? "text-red-500 animate-pulse" : ""}`}>
+                        SYSTEM STATE: {systemState}
+                      </span>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
                 
             </div>
           </motion.div>

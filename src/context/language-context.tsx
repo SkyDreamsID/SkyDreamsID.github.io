@@ -35,10 +35,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useLanguage() {
+export function useLanguage(): LanguageContextType {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    // Fallback aman kalau dipakai di luar LanguageProvider (misal SSR boundary)
+    if (process.env.NODE_ENV === "development") {
+      console.warn("useLanguage: dipanggil di luar LanguageProvider, pakai default 'id'");
+    }
+    return {
+      language: "id",
+      setLanguage: () => {},
+      t: dictionary["id"],
+    };
   }
   return context;
 }
